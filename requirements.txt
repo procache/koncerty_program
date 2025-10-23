@@ -1,0 +1,10 @@
+# Web scraping
+requests==2.31.0
+beautifulsoup4==4.12.3
+lxml==5.1.0
+
+# HTTP caching for development
+requests-cache==1.2.0
+
+# Testing
+pytest==8.0.0
