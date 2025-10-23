@@ -807,14 +807,70 @@ class MeetFactoryBrowserScraper(BrowserScraper):
         )
 
     def scrape(self) -> List[Dict]:
-        """Main scraping method using Playwright"""
+        """Main scraping method using Playwright with infinite scroll"""
         self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
 
-        # Fetch HTML with browser
-        html = self.fetch_html_with_browser(wait_for_selector='div.ab-box')
+        # Fetch HTML with browser (custom method with scrolling)
+        html = self.fetch_with_infinite_scroll()
 
         # Parse HTML
         return self.parse_html(html)
+
+    def fetch_with_infinite_scroll(self) -> str:
+        """
+        Fetch HTML with infinite scroll support
+        Scrolls down page to load all lazy-loaded events
+        """
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=self.headless)
+                page = browser.new_page()
+
+                self.logger.info(f"Opening browser for {self.url}")
+                page.goto(self.url, wait_until='networkidle', timeout=30000)
+
+                # Wait for initial content
+                self.logger.info("Waiting for initial event boxes")
+                page.wait_for_selector('div.ab-box', timeout=10000)
+
+                # Scroll down multiple times to trigger lazy loading
+                previous_height = 0
+                scroll_attempts = 0
+                max_scrolls = 10  # Safety limit
+
+                self.logger.info("Starting infinite scroll...")
+                while scroll_attempts < max_scrolls:
+                    # Get current scroll height
+                    current_height = page.evaluate("document.body.scrollHeight")
+
+                    # If height hasn't changed, we've reached the bottom
+                    if current_height == previous_height:
+                        self.logger.info(f"Reached bottom after {scroll_attempts} scrolls")
+                        break
+
+                    # Scroll to bottom
+                    page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+
+                    # Wait for new content to load
+                    page.wait_for_timeout(1500)  # 1.5 seconds between scrolls
+
+                    previous_height = current_height
+                    scroll_attempts += 1
+
+                    # Count current event boxes
+                    event_count = page.evaluate("document.querySelectorAll('div.ab-box').length")
+                    self.logger.info(f"Scroll {scroll_attempts}: Found {event_count} event boxes")
+
+                # Get final HTML
+                html = page.content()
+                browser.close()
+
+                self.logger.info(f"Successfully fetched {len(html)} chars of HTML after scrolling")
+                return html
+
+        except Exception as e:
+            self.logger.error(f"Failed to fetch with infinite scroll: {e}")
+            raise Exception(f"Failed to fetch with infinite scroll: {e}")
 
     def parse_html(self, html: str) -> List[Dict]:
         """Parse MeetFactory HTML and extract events"""
