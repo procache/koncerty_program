@@ -98,7 +98,7 @@
 
 **Batch 2: Medium venues**
 [x] Forum Karlín (5-15 expected) - Playwright ✅ 6 events
-[ ] Lucerna Velký sál (8-20 expected) - Playwright
+[ ] Lucerna Velký sál (8-20 expected) - Playwright (DEFERRED - no November events found, 5 debug attempts)
 [ ] MeetFactory (3-12 expected) - Playwright
 [ ] Malostranská beseda (5-15 expected) - Playwright
 
