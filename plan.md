@@ -109,7 +109,7 @@
 [x] Malostranská beseda (5-15 expected) - Playwright ✅ 28 events
 
 **Batch 3: Small/specialized venues**
-[ ] U Staré Paní Jazz & Cocktail Club (5-15 expected)
+[ ] U Staré Paní Jazz & Cocktail Club (5-15 expected) - DEFERRED (website unreachable, ERR_CONNECTION_REFUSED)
 [ ] Reduta Jazz Club (5-20 expected) - Playwright
 [ ] Watt Music Club (3-10 expected) - Playwright
 [ ] Divadlo Pod lampou (0-5 expected) - Playwright
