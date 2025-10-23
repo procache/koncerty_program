@@ -1,0 +1,32 @@
+# November 2025 - All Dates
+
+1. Sobota 1. listopadu 2025
+2. Neděle 2. listopadu 2025
+3. Pondělí 3. listopadu 2025
+4. Úterý 4. listopadu 2025
+5. Středa 5. listopadu 2025
+6. Čtvrtek 6. listopadu 2025
+7. Pátek 7. listopadu 2025
+8. Sobota 8. listopadu 2025
+9. Neděle 9. listopadu 2025
+10. Pondělí 10. listopadu 2025
+11. Úterý 11. listopadu 2025
+12. Středa 12. listopadu 2025
+13. Čtvrtek 13. listopadu 2025
+14. Pátek 14. listopadu 2025
+15. Sobota 15. listopadu 2025
+16. Neděle 16. listopadu 2025
+17. Pondělí 17. listopadu 2025
+18. Úterý 18. listopadu 2025
+19. Středa 19. listopadu 2025
+20. Čtvrtek 20. listopadu 2025
+21. Pátek 21. listopadu 2025
+22. Sobota 22. listopadu 2025
+23. Neděle 23. listopadu 2025
+24. Pondělí 24. listopadu 2025
+25. Úterý 25. listopadu 2025
+26. Středa 26. listopadu 2025
+27. Čtvrtek 27. listopadu 2025
+28. Pátek 28. listopadu 2025
+29. Sobota 29. listopadu 2025
+30. Neděle 30. listopadu 2025

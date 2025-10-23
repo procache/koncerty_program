@@ -1,0 +1,265 @@
+{
+  "config": {
+    "mesic": "listopad",
+    "mesic_en": "November",
+    "rok": 2025,
+    "mesic_cislo": 11,
+    "pocet_dni": 30,
+    "validace": {
+      "globalni_minimum_akci": 100,
+      "dny_bez_akci_maximum": 0,
+      "refetch_pokud_vikend_prazdny": true,
+      "cross_validate_velke_kluby": true,
+      "min_akci_vikend": 5
+    }
+  },
+  "kluby": [
+    {
+      "nazev": "O2 Arena",
+      "url": "https://www.o2arena.cz/en/events/",
+      "mesto": "Praha",
+      "velikost": "velky",
+      "min_akci": 4,
+      "max_akci": 15,
+      "vikend_akce_pravdepodobnost": 0.7,
+      "poznamka": "Jen hudební koncerty, ne sport"
+    },
+    {
+      "nazev": "O2 Universum",
+      "url": "https://www.o2universum.cz/en/events/",
+      "mesto": "Praha",
+      "velikost": "stredni",
+      "min_akci": 3,
+      "max_akci": 10,
+      "vikend_akce_pravdepodobnost": 0.5
+    },
+    {
+      "nazev": "Sportovní hala Fortuna (Tipsport Arena)",
+      "url": "https://www.sportovnihalafortuna.cz/",
+      "mesto": "Praha",
+      "velikost": "velky",
+      "min_akci": 2,
+      "max_akci": 8,
+      "vikend_akce_pravdepodobnost": 0.6,
+      "poznamka": "Jen hudební koncerty, ne sport"
+    },
+    {
+      "nazev": "Forum Karlín",
+      "url": "https://www.forumkarlin.cz/en/events/",
+      "mesto": "Praha",
+      "velikost": "velky",
+      "min_akci": 5,
+      "max_akci": 15,
+      "vikend_akce_pravdepodobnost": 0.8
+    },
+    {
+      "nazev": "Palác Akropolis",
+      "url": "https://palacakropolis.cz/",
+      "mesto": "Praha",
+      "velikost": "velky",
+      "min_akci": 15,
+      "max_akci": 30,
+      "vikend_akce_pravdepodobnost": 0.9,
+      "poznamka": "Vyloučit divadlo a film, jen hudba",
+      "alternative_urls": [
+        "https://palacakropolis.cz/program"
+      ]
+    },
+    {
+      "nazev": "Lucerna Velký sál",
+      "url": "https://www.lucpra.com/index.php/cz/",
+      "mesto": "Praha",
+      "velikost": "velky",
+      "min_akci": 8,
+      "max_akci": 20,
+      "vikend_akce_pravdepodobnost": 0.8
+    },
+    {
+      "nazev": "Roxy",
+      "url": "https://www.roxy.cz/tickets/",
+      "mesto": "Praha",
+      "velikost": "velky",
+      "min_akci": 15,
+      "max_akci": 30,
+      "vikend_akce_pravdepodobnost": 0.95
+    },
+    {
+      "nazev": "MeetFactory",
+      "url": "https://meetfactory.cz/en/program/hudba",
+      "mesto": "Praha",
+      "velikost": "stredni",
+      "min_akci": 3,
+      "max_akci": 12,
+      "vikend_akce_pravdepodobnost": 0.6,
+      "poznamka": "Jen sekce hudba"
+    },
+    {
+      "nazev": "Lucerna Music Bar",
+      "url": "https://musicbar.cz/en/program/",
+      "mesto": "Praha",
+      "velikost": "velky",
+      "min_akci": 20,
+      "max_akci": 30,
+      "vikend_akce_pravdepodobnost": 0.95
+    },
+    {
+      "nazev": "Rock Café",
+      "url": "https://rockcafe.cz/en/program/",
+      "mesto": "Praha",
+      "velikost": "velky",
+      "min_akci": 20,
+      "max_akci": 30,
+      "vikend_akce_pravdepodobnost": 0.95,
+      "poznamka": "Vyloučit divadlo a comedy"
+    },
+    {
+      "nazev": "Vagon",
+      "url": "https://www.vagon.cz/next.php",
+      "mesto": "Praha",
+      "velikost": "stredni",
+      "min_akci": 10,
+      "max_akci": 25,
+      "vikend_akce_pravdepodobnost": 0.9
+    },
+    {
+      "nazev": "Jazz Dock",
+      "url": "https://www.jazzdock.cz/en/program",
+      "mesto": "Praha",
+      "velikost": "stredni",
+      "min_akci": 8,
+      "max_akci": 20,
+      "vikend_akce_pravdepodobnost": 0.8
+    },
+    {
+      "nazev": "U Staré Paní Jazz & Cocktail Club",
+      "url": "https://www.ustarepani.cz/program/",
+      "mesto": "Praha",
+      "velikost": "maly",
+      "min_akci": 5,
+      "max_akci": 15,
+      "vikend_akce_pravdepodobnost": 0.7
+    },
+    {
+      "nazev": "Reduta Jazz Club",
+      "url": "https://www.redutajazzclub.cz/program",
+      "mesto": "Praha",
+      "velikost": "maly",
+      "min_akci": 5,
+      "max_akci": 20,
+      "vikend_akce_pravdepodobnost": 0.7
+    },
+    {
+      "nazev": "Malostranská beseda",
+      "url": "https://www.malostranska-beseda.cz/club/program",
+      "mesto": "Praha",
+      "velikost": "stredni",
+      "min_akci": 5,
+      "max_akci": 15,
+      "vikend_akce_pravdepodobnost": 0.7
+    },
+    {
+      "nazev": "Cross Club",
+      "url": "https://www.crossclub.cz/cs/program/",
+      "mesto": "Praha",
+      "velikost": "stredni",
+      "min_akci": 8,
+      "max_akci": 20,
+      "vikend_akce_pravdepodobnost": 0.85,
+      "poznamka": "Vyloučit divadlo a film"
+    },
+    {
+      "nazev": "Watt Music Club",
+      "url": "https://www.wattmusicclub.cz/",
+      "mesto": "Praha",
+      "velikost": "maly",
+      "min_akci": 3,
+      "max_akci": 10,
+      "vikend_akce_pravdepodobnost": 0.6
+    },
+    {
+      "nazev": "Buena Vista Club",
+      "url": "https://www.buenavistaclub.cz/program-klubu.aspx",
+      "mesto": "Plzeň",
+      "velikost": "maly",
+      "min_akci": 3,
+      "max_akci": 10,
+      "vikend_akce_pravdepodobnost": 0.5
+    },
+    {
+      "nazev": "Divadlo Pod lampou",
+      "url": "https://www.divadlopodlampou.cz/",
+      "mesto": "Praha",
+      "velikost": "maly",
+      "min_akci": 0,
+      "max_akci": 5,
+      "vikend_akce_pravdepodobnost": 0.3,
+      "poznamka": "Primárně divadlo, hudba občas"
+    },
+    {
+      "nazev": "Kulturní dům Šeříkovka",
+      "url": "https://www.serikovna.cz/program/",
+      "mesto": "Praha",
+      "velikost": "maly",
+      "min_akci": 1,
+      "max_akci": 8,
+      "vikend_akce_pravdepodobnost": 0.4
+    },
+    {
+      "nazev": "Kulturní dům JAS",
+      "url": "https://www.kdjas.cz/",
+      "mesto": "Praha",
+      "velikost": "maly",
+      "min_akci": 1,
+      "max_akci": 8,
+      "vikend_akce_pravdepodobnost": 0.4
+    },
+    {
+      "nazev": "Dům hudby Plzeň",
+      "url": "https://www.dumhudbyplzen.cz/program/",
+      "mesto": "Plzeň",
+      "velikost": "stredni",
+      "min_akci": 2,
+      "max_akci": 10,
+      "vikend_akce_pravdepodobnost": 0.5
+    },
+    {
+      "nazev": "Moving Station",
+      "url": "https://www.movingstation.eu/program/",
+      "mesto": "Plzeň",
+      "velikost": "stredni",
+      "min_akci": 2,
+      "max_akci": 10,
+      "vikend_akce_pravdepodobnost": 0.5,
+      "poznamka": "Vyloučit divadlo a film, jen hudba"
+    },
+    {
+      "nazev": "Papírna Plzeň",
+      "url": "https://www.informuji.cz/en/object/4515-papirna/",
+      "mesto": "Plzeň",
+      "velikost": "maly",
+      "min_akci": 1,
+      "max_akci": 8,
+      "vikend_akce_pravdepodobnost": 0.4
+    },
+    {
+      "nazev": "Měšťanská beseda",
+      "url": "https://mestanskabeseda.cz/program/",
+      "mesto": "Plzeň",
+      "velikost": "stredni",
+      "min_akci": 3,
+      "max_akci": 12,
+      "vikend_akce_pravdepodobnost": 0.6,
+      "poznamka": "Vyloučit divadlo"
+    },
+    {
+      "nazev": "LOGSPEED CZ Aréna (Home Monitoring Aréna)",
+      "url": "https://www.hcplzen.cz/areal-logspeed-cz-areny",
+      "mesto": "Plzeň",
+      "velikost": "velky",
+      "min_akci": 0,
+      "max_akci": 5,
+      "vikend_akce_pravdepodobnost": 0.3,
+      "poznamka": "Primárně hokej, hudba občas"
+    }
+  ]
+}
