@@ -791,6 +791,128 @@ class ForumKarlinBrowserScraper(BrowserScraper):
         return self.events
 
 
+class MeetFactoryBrowserScraper(BrowserScraper):
+    """
+    MeetFactory scraper using Playwright
+    URL: https://meetfactory.cz/cs/program/hudba
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://meetfactory.cz/cs/program/hudba",
+            venue_name="MeetFactory",
+            city="Praha",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Main scraping method using Playwright"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+
+        # Fetch HTML with browser
+        html = self.fetch_html_with_browser(wait_for_selector='div.ab-box')
+
+        # Parse HTML
+        return self.parse_html(html)
+
+    def parse_html(self, html: str) -> List[Dict]:
+        """Parse MeetFactory HTML and extract events"""
+
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find all event boxes
+        event_boxes = soup.find_all('div', class_='ab-box')
+        self.logger.info(f"Found {len(event_boxes)} event boxes")
+
+        events = []
+
+        for box in event_boxes:
+            try:
+                # Find date: <p class="abb-date"><b>1. 11.</b>...
+                date_elem = box.find('p', class_='abb-date')
+                if not date_elem:
+                    continue
+
+                date_b = date_elem.find('b')
+                if not date_elem:
+                    continue
+
+                date_text = date_b.get_text(strip=True)
+
+                # Parse date: "1. 11." or "11. 11."
+                date_match = re.search(r'(\d{1,2})\.\s*(\d{1,2})\.', date_text)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+                month = int(date_match.group(2))
+
+                # Skip if not our month
+                if month != self.month:
+                    continue
+
+                # Find time in span
+                time_spans = date_elem.find_all('span')
+                time_str = "20:00"  # default
+                for span in time_spans:
+                    text = span.get_text(strip=True)
+                    if re.match(r'\d{1,2}\.\d{2}', text):
+                        time_str = text.replace('.', ':')
+                        break
+
+                # Find artist: <h3><a><span itemprop="name">Artist Name</span></a></h3>
+                h3 = box.find('h3')
+                if not h3:
+                    continue
+
+                artist_span = h3.find('span', itemprop='name')
+                artist = artist_span.get_text(strip=True) if artist_span else ""
+
+                if not artist:
+                    # Fallback: get from h3 > a
+                    a_tag = h3.find('a')
+                    if a_tag:
+                        artist = a_tag.get_text(strip=True)
+
+                # Find URL
+                link = box.find('a', href=re.compile(r'/program/detail/'))
+                url = ""
+                if link:
+                    url = link.get('href', '')
+                    if url.startswith('/'):
+                        url = f"https://meetfactory.cz{url}"
+
+                if not artist:
+                    continue
+
+                # Create event
+                event = {
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url,
+                    'status': None
+                }
+
+                events.append(event)
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        # Sort by day
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} events")
+        return self.events
+
+
 def main():
     """Test browser scrapers"""
     # November 2025
