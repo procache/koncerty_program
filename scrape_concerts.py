@@ -79,7 +79,17 @@ def scrape_venue(venue: Dict, month: int, year: int) -> Tuple[List[Dict], Dict, 
                 logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
                 return events, validation, None
 
-        # 2. Try Beautiful Soup scraper (static HTML)
+        # 2. Try Playwright scraper (JavaScript sites)
+        if venue_name == "Rock Café":
+            from browser_scraper import RockCafeBrowserScraper
+            logger.info(f"{venue_name}: Using Playwright (JavaScript site)")
+            scraper = RockCafeBrowserScraper(month=month, year=year)
+            events = scraper.scrape()
+            validation = scraper.validate(min_events=min_events, max_events=max_events)
+            logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+            return events, validation, None
+
+        # 3. Try Beautiful Soup scraper (static HTML)
         if venue_name == "Palác Akropolis":
             from scraper_akropolis import AkropolisScraper
             logger.info(f"{venue_name}: Using Beautiful Soup (static HTML)")
@@ -89,7 +99,7 @@ def scrape_venue(venue: Dict, month: int, year: int) -> Tuple[List[Dict], Dict, 
             logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
             return events, validation, None
 
-        # 3. No scraper available
+        # 4. No scraper available
         logger.warning(f"No scraper implemented for {venue_name}")
         return [], None, Exception(f"No scraper for {venue_name}")
 

@@ -32,6 +32,17 @@ Připrav program českých hudebních klubů, jejichž seznam je v souboru kluby
 [x] Add validation: weekend coverage, URL completeness, date ranges (in base class)
 [x] Generate events_data.json with all club data (52 events from 2 venues ✓)
 
+### Phase 3.5: Complete All 26 Venues ⚠️ CRITICAL
+[ ] Use WebFetch to collect November 2025 data for remaining 24 clubs
+[ ] Add WebFetch data to webfetch_data.py for each club
+[ ] Create parser functions in webfetch_scraper.py for each club
+[ ] Test complete scraping: target 200+ total events from all 26 venues
+[ ] Validate: All 30 days covered, weekend coverage 100%
+
+**Remaining clubs (24):**
+Praha: O2 Arena, O2 Universum, Sportovní hala Fortuna, Forum Karlín, Lucerna Velký sál, Roxy, MeetFactory, Lucerna Music Bar, Vagon, Jazz Dock, U Staré Paní, Reduta Jazz Club, Malostranská beseda, Cross Club, Watt Music Club
+Plzeň: Buena Vista Club, Divadlo Pod lampou, Kulturní dům Šeříkovka, Kulturní dům JAS, Dům hudby Plzeň, Moving Station, Měšťanská beseda, LOGSPEED CZ Aréna
+
 ### Phase 4: Unit Testing
 [ ] Create test_scraper.py
 [ ] Test weekend coverage for large venues (min 2 events on Fri/Sat)
