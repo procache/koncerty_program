@@ -1112,5 +1112,108 @@ class MalostranaskaBesedaBrowserScraper(BrowserScraper):
         return self.events
 
 
+class RedutaJazzClubBrowserScraper(BrowserScraper):
+    """
+    Reduta Jazz Club scraper using Playwright
+    URL: https://www.redutajazzclub.cz/program-cs/MMYYYY
+    """
+
+    def __init__(self, month: int, year: int):
+        # Use URL with month/year in format MMYYYY
+        url = f"https://www.redutajazzclub.cz/program-cs/{month:02d}{year}"
+        super().__init__(
+            url=url,
+            venue_name="Reduta Jazz Club",
+            city="Praha",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Main scraping method using Playwright"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+
+        # Fetch HTML with browser
+        html = self.fetch_html_with_browser(wait_for_selector='td[data-link]')
+
+        # Parse HTML
+        return self.parse_html(html)
+
+    def parse_html(self, html: str) -> List[Dict]:
+        """Parse Reduta Jazz Club HTML and extract events from calendar"""
+        import json as json_module
+
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find all td elements with our month/year in ID
+        pattern = re.compile(rf'{self.year}-{self.month:02d}-\d{{2}}')
+        event_tds = soup.find_all('td', id=pattern)
+        self.logger.info(f"Found {len(event_tds)} event cells")
+
+        events = []
+
+        for td in event_tds:
+            try:
+                # Extract date from ID
+                td_id = td.get('id', '')
+                date_match = re.search(rf'{self.year}-{self.month:02d}-(\d{{2}})', td_id)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+
+                # Get data-label JSON
+                data_label = td.get('data-label', '')
+                if not data_label:
+                    continue
+
+                # Parse JSON
+                event_data = json_module.loads(data_label)
+
+                # Extract time and artist from body HTML
+                body_html = event_data.get('body', '')
+                body_soup = BeautifulSoup(body_html, 'lxml')
+
+                # Time from span.tt-time
+                time_span = body_soup.find('span', class_='tt-time')
+                time_str = time_span.get_text(strip=True) if time_span else "19:00"
+
+                # Artist from span.tt-text
+                text_span = body_soup.find('span', class_='tt-text')
+                artist = text_span.get_text(strip=True) if text_span else ""
+
+                if not artist:
+                    continue
+
+                # URL from data-link
+                url = td.get('data-link', '')
+
+                # Create event
+                event = {
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url,
+                    'status': None
+                }
+
+                events.append(event)
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        # Sort by day
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} events")
+        return self.events
+
+
 if __name__ == '__main__':
     main()

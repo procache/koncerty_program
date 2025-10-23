@@ -70,8 +70,10 @@
 [x] Test full automated run: 8/26 venues without Claude ✅
 [x] Implement Malostranská beseda Playwright scraper (28 events ✅)
 [x] Test full automated run: 9/26 venues without Claude ✅
+[x] Implement Reduta Jazz Club Playwright scraper (30 events ✅)
+[x] Test full automated run: 10/26 venues without Claude ✅
 
-**Current Status - 9/26 FULLY AUTOMATED (35% complete):**
+**Current Status - 10/26 FULLY AUTOMATED (38% complete):**
 - ✅ **Palác Akropolis** (29 events) - Beautiful Soup - **AUTOMATED**
 - ✅ **Rock Café** (23 events) - Playwright - **AUTOMATED**
 - ✅ **Lucerna Music Bar** (31 events) - Playwright - **AUTOMATED**
@@ -81,8 +83,9 @@
 - ✅ **Forum Karlín** (6 events) - Playwright - **AUTOMATED**
 - ✅ **MeetFactory** (15 events) - Playwright + Infinite Scroll - **AUTOMATED**
 - ✅ **Malostranská beseda** (28 events) - Playwright - **AUTOMATED**
+- ✅ **Reduta Jazz Club** (30 events) - Playwright - **AUTOMATED**
 
-**Total: 203 events from 9 venues**
+**Total: 233 events from 10 venues**
 
 **Next Steps (Batch 1 - deferred):**
 [ ] Implement Cross Club Playwright scraper (DEFERRED - complex JavaScript calendar)
@@ -110,7 +113,7 @@
 
 **Batch 3: Small/specialized venues**
 [ ] U Staré Paní Jazz & Cocktail Club (5-15 expected) - DEFERRED (website unreachable, ERR_CONNECTION_REFUSED)
-[ ] Reduta Jazz Club (5-20 expected) - Playwright
+[x] Reduta Jazz Club (5-20 expected) - Playwright ✅ 30 events
 [ ] Watt Music Club (3-10 expected) - Playwright
 [ ] Divadlo Pod lampou (0-5 expected) - Playwright
 [ ] Kulturní dům Šeříkovka (1-8 expected) - Playwright
