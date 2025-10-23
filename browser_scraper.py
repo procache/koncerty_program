@@ -1002,5 +1002,115 @@ def main():
         print(f"  {event['date']} {event['time'] or ''} - {event['artist'][:50]}")
 
 
+class MalostranaskaBesedaBrowserScraper(BrowserScraper):
+    """
+    Malostranská beseda scraper using Playwright
+    URL: https://www.malostranska-beseda.cz/club/program?year=YYYY&month=MM
+    """
+
+    def __init__(self, month: int, year: int):
+        # Use URL with month/year parameters
+        url = f"https://www.malostranska-beseda.cz/club/program?year={year}&month={month}"
+        super().__init__(
+            url=url,
+            venue_name="Malostranská beseda",
+            city="Praha",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Main scraping method using Playwright"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+
+        # Fetch HTML with browser
+        html = self.fetch_html_with_browser(wait_for_selector='div.row')
+
+        # Parse HTML
+        return self.parse_html(html)
+
+    def parse_html(self, html: str) -> List[Dict]:
+        """Parse Malostranská beseda HTML and extract events"""
+
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find ALL divs with class row
+        rows = soup.find_all('div', class_='row')
+        self.logger.info(f"Found {len(rows)} row divs")
+
+        events = []
+        seen_urls = set()
+
+        for row in rows:
+            try:
+                text = row.get_text()
+
+                # Look for date in this row
+                date_match = re.search(r'(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})', text)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+                month = int(date_match.group(2))
+                year = int(date_match.group(3))
+
+                # Skip if not our month/year
+                if month != self.month or year != self.year:
+                    continue
+
+                # Find time
+                time_match = re.search(r'(\d{1,2}):(\d{2})', text)
+                time_str = time_match.group(0) if time_match else "20:00"
+
+                # Find artist (from h1-h4 tags)
+                h_tags = row.find_all(['h1', 'h2', 'h3', 'h4'])
+                artist = h_tags[0].get_text(strip=True) if h_tags else ""
+
+                if not artist:
+                    continue  # Skip if no artist
+
+                # Find URL - prefer ticketstream, then goout, then any href
+                links = row.find_all('a', href=True)
+                url = ""
+                for link in links:
+                    href = link.get('href', '')
+                    if 'ticketstream.cz/akce/' in href or 'goout.net' in href:
+                        url = href if href.startswith('http') else f"https://www.malostranska-beseda.cz{href}"
+                        break
+
+                # Skip if we've seen this URL before (deduplication)
+                if url and url in seen_urls:
+                    continue
+
+                if url:
+                    seen_urls.add(url)
+
+                # Create event
+                event = {
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url,
+                    'status': None
+                }
+
+                events.append(event)
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        # Sort by day
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} events")
+        return self.events
+
+
 if __name__ == '__main__':
     main()

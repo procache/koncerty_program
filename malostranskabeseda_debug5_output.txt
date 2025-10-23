@@ -1,0 +1,26 @@
+Fetching: https://www.malostranska-beseda.cz/club/program?year=2025&month=11
+Found 36 row divs total
+Found 29 rows with November 2025 dates
+
+=== Event 1 ===
+Date: 01. 11. 2025
+Time: 20:00
+Artist: Michal Bragagnolo - Gala night
+URL: https://www.ticketstream.cz/akce/roy-ellis-aka-mr-symarip-jam-186705
+
+=== Event 2 ===
+Date: 01. 11. 2025
+Time: 20:00
+Artist: Michal Bragagnolo - Gala night
+Links found: ['https://goout.net/cs/michal-bragagnolo-gala-night/szgpyby']
+
+=== Event 3 ===
+Date: 02. 11. 2025
+Time: 20:00
+Traceback (most recent call last):
+  File "C:\Projects\koncerty_program\debug_malostranskabeseda5.py", line 58, in <module>
+    print(f"Artist: {h_tags[0].get_text(strip=True)}")
+  File "C:\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u016f' in position 11: character maps to <undefined>
