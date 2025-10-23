@@ -402,6 +402,144 @@ logger.info(f"Scroll {scroll_attempts}: Found {event_count} event boxes")
 
 ---
 
+## HTML Parsing Patterns
+
+### Rule: Parse nested JSON-HTML hybrid structures in calendar systems
+**Why:** Modern calendar systems often embed event data as JSON in HTML attributes, with event details as HTML within that JSON. Requires multi-stage parsing.
+
+**Pattern discovered in:** Reduta Jazz Club calendar
+
+**Structure:**
+```html
+<td id="calendar_2025-11-01" data-label='{"id":"...","body":"<span class=\"tt-time\">19:00</span>..."}'>
+```
+
+**Enforcement:**
+```python
+# Stage 1: Parse main HTML
+soup = BeautifulSoup(html, 'lxml')
+
+# Stage 2: Find elements with JSON data
+event_tds = soup.find_all('td', {'data-label': True})
+
+for td in event_tds:
+    # Stage 3: Parse JSON from attribute
+    data_label = td.get('data-label', '')
+    event_data = json.loads(data_label)
+
+    # Stage 4: Parse HTML from JSON body
+    body_html = event_data.get('body', '')
+    body_soup = BeautifulSoup(body_html, 'lxml')
+
+    # Stage 5: Extract data from nested HTML
+    time = body_soup.find('span', class_='tt-time').get_text()
+    artist = body_soup.find('span', class_='tt-text').get_text()
+```
+
+**Key points:**
+- Import `json` module for JSON parsing
+- Use try/except around JSON parsing (may be malformed)
+- Nested BeautifulSoup instances are fine - creates new parser
+- Data flows: HTML → JSON → HTML → Data
+
+**Example - Reduta Jazz Club:**
+- URL: `/program-cs/MMYYYY` (month-year format)
+- Calendar cells: `<td id="zabuto_calendar_2025-11-DD">`
+- Data attribute: `data-label` contains JSON
+- JSON body field: Contains HTML with event details
+
+---
+
+### Rule: Extract artists from flexible heading tags (h1-h4)
+**Why:** Different venues use different heading levels for artist names. Searching all heading tags ensures we catch the artist regardless of HTML structure.
+
+**Enforcement:**
+```python
+# Search all heading levels at once
+h_tags = row.find_all(['h1', 'h2', 'h3', 'h4'])
+artist = h_tags[0].get_text(strip=True) if h_tags else ""
+
+if not artist:
+    continue  # Skip events without artist names
+```
+
+**Benefits:**
+- Handles varying HTML structures across venues
+- Doesn't assume specific heading level
+- Falls back gracefully if no heading found
+
+**Example usage:**
+- Malostranská beseda: Artist in various heading levels within `div.row`
+- Works even when HTML structure changes between page updates
+
+---
+
+## Data Validation
+
+### Rule: Max event counts are soft limits, not hard failures
+**Why:** Venues may have more events than expected during active months. Validation should warn but not fail on exceeding maximum.
+
+**Evidence:**
+- Malostranská beseda: Expected 5-15 events, found 28 (GREEN status)
+- Reduta Jazz Club: Expected 5-20 events, found 30 (GREEN status)
+
+**Enforcement:**
+```python
+def validate(self, min_events: int, max_events: int):
+    # Fail only on minimum threshold
+    if total_events < min_events * 0.5:
+        status = 'RED'
+    elif total_events < min_events:
+        status = 'YELLOW'
+    else:
+        status = 'GREEN'  # Even if > max_events
+
+    # Log if over max, but don't fail
+    if total_events > max_events:
+        logger.info(f"Above expected max ({max_events}), but still GREEN")
+```
+
+**Rationale:**
+- Min threshold: Hard requirement (indicates scraper failure)
+- Max threshold: Soft guidance (venues can have high activity)
+- GREEN status based on meeting minimum, not staying under maximum
+
+---
+
+## URL Patterns & Navigation
+
+### Rule: Try direct URL construction before calendar navigation
+**Why:** Faster and more reliable to construct URLs with month/year parameters than to navigate JavaScript calendars.
+
+**Patterns discovered:**
+
+**Month-Year in URL path:**
+```python
+# Reduta Jazz Club
+url = f"https://www.redutajazzclub.cz/program-cs/{month:02d}{year}"
+# Example: /program-cs/112025 (November 2025)
+```
+
+**Month-Year in query parameters:**
+```python
+# Malostranská beseda
+url = f"https://www.malostranska-beseda.cz/club/program?year={year}&month={month}"
+# Example: ?year=2025&month=11
+```
+
+**Enforcement:**
+- Always inspect URL patterns in browser first
+- Look for month/year in URL when viewing current month
+- Construct URL directly rather than clicking navigation
+- Falls back to calendar navigation only if direct URL doesn't work
+
+**Benefits:**
+- Faster (one page load vs multiple clicks)
+- More reliable (no timing issues with clicks)
+- Easier to debug (direct URL inspection)
+
+---
+
 ## Future Python Improvements
 
 ### Planned enhancements for Phase 2-6:

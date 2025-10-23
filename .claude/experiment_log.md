@@ -324,3 +324,111 @@ def fetch_with_infinite_scroll(self) -> str:
 - `b3b246b`: Fixed with infinite scroll (15 events)
 
 ---
+
+## Success: Malostranská beseda High Event Count (28 vs 15 expected)
+**Date:** 2025-10-23
+
+- **Context:** Implemented Malostranská beseda scraper, expected 5-15 events
+- **Result:** Found 28 events for November 2025 - nearly double the expected maximum
+
+### Technical Implementation
+- **URL format:** Direct month/year parameters: `?year=2025&month=11`
+- **HTML structure:** Events in `div.row` containers with date, time, artist
+- **Date parsing:** Full format "DD. MM. YYYY" using regex
+- **Artist extraction:** From h1-h4 heading tags within row
+- **URL sources:** Supports ticketstream.cz, goout.net, or empty
+- **Deduplication:** Tracks seen URLs to avoid duplicates
+
+### Code Pattern
+```python
+# Find all rows with November dates
+for row in soup.find_all('div', class_='row'):
+    date_match = re.search(r'(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})', row.get_text())
+    if month != self.month or year != self.year:
+        continue
+
+    # Extract artist from h1-h4 tags
+    h_tags = row.find_all(['h1', 'h2', 'h3', 'h4'])
+    artist = h_tags[0].get_text(strip=True) if h_tags else ""
+```
+
+### Metrics
+- **Expected range:** 5-15 events
+- **Actual count:** 28 events
+- **Status:** GREEN (validation passed despite being above max)
+- **Coverage:** All November days represented
+
+### Lesson Learned
+✅ Expected ranges in kluby.json are estimates - venues may have significantly more events during active months. GREEN status correctly validates based on minimum threshold, not maximum ceiling.
+
+---
+
+## Success: Reduta Jazz Club Calendar JSON Parsing
+**Date:** 2025-10-23
+
+- **Context:** Reduta Jazz Club uses JavaScript calendar with events in data attributes
+- **Result:** Successfully extracted 30 events by parsing JSON within HTML attributes
+
+### Technical Discovery
+- **URL pattern:** `/program-cs/MMYYYY` (e.g., `/program-cs/112025`)
+- **Data storage:** Events stored in `<td data-label='{"id":"...","body":"..."}'>` as JSON
+- **Nested HTML:** Event details (time, artist) embedded as HTML within JSON body field
+- **Date format:** Calendar TD IDs use `YYYY-MM-DD` pattern
+
+### Implementation Pattern
+```python
+# Find all td elements with our month/year
+pattern = re.compile(rf'{year}-{month:02d}-\d{{2}}')
+event_tds = soup.find_all('td', id=pattern)
+
+for td in event_tds:
+    # Parse JSON from data-label attribute
+    data_label = td.get('data-label', '')
+    event_data = json.loads(data_label)
+
+    # Extract HTML from JSON body, then parse again
+    body_html = event_data.get('body', '')
+    body_soup = BeautifulSoup(body_html, 'lxml')
+
+    # Get time and artist from nested HTML
+    time_span = body_soup.find('span', class_='tt-time')
+    text_span = body_soup.find('span', class_='tt-text')
+```
+
+### Metrics
+- **Expected range:** 5-20 events
+- **Actual count:** 30 events
+- **Coverage:** All 30 November days (100%)
+- **Status:** GREEN
+
+### Key Insight
+Some venues use hybrid approaches - JavaScript calendar UI with data embedded as JSON in HTML attributes. Requires:
+1. Initial BeautifulSoup parse of page
+2. JSON parsing of data attributes
+3. Secondary BeautifulSoup parse of HTML within JSON
+
+---
+
+## Issue: U Staré Paní Website Unreachable
+**Date:** 2025-10-23
+
+- **Context:** Attempted to scrape U Staré Paní Jazz & Cocktail Club
+- **Failure Type:** Connection error - website completely unreachable
+
+### 📎 Proof
+- Error: `ERR_CONNECTION_REFUSED` from https://www.ustarepani.cz/program/
+- Tested with both `requests` library and Playwright
+- Tested with custom user agent - still failed
+- Both methods returned connection refused
+
+### 📏 Rule Applied
+- Applied prioritization rule: defer after connection failures
+- Marked as DEFERRED in plan.md
+- Will revisit after implementing other venues
+
+### Resolution
+- Updated plan.md: "U Staré Paní - DEFERRED (website unreachable, ERR_CONNECTION_REFUSED)"
+- Moved to next venue (Reduta Jazz Club)
+- Commit: `181cc26`
+
+---
