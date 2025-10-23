@@ -677,6 +677,120 @@ class JazzDockBrowserScraper(BrowserScraper):
         return self.events
 
 
+class ForumKarlinBrowserScraper(BrowserScraper):
+    """
+    Forum Karlín scraper using Playwright
+    URL: https://www.forumkarlin.cz/en/events/
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://www.forumkarlin.cz/en/events/",
+            venue_name="Forum Karlín",
+            city="Praha",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Main scraping method using Playwright"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+
+        # Fetch HTML with browser
+        html = self.fetch_html_with_browser(wait_for_selector='div[class*="event"]')
+
+        # Parse HTML
+        return self.parse_html(html)
+
+    def parse_html(self, html: str) -> List[Dict]:
+        """Parse Forum Karlín HTML and extract events"""
+
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find all event divs
+        event_divs = soup.find_all('div', class_=re.compile('event', re.I))
+        self.logger.info(f"Found {len(event_divs)} event divs")
+
+        events = []
+        seen_urls = set()  # To avoid duplicates
+
+        for div in event_divs:
+            try:
+                # Get full text
+                text = div.get_text(separator='|', strip=True)
+
+                # Look for date pattern: "DD. MM. YYYY"
+                date_match = re.search(r'(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})', text)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+                month = int(date_match.group(2))
+                year_parsed = int(date_match.group(3))
+
+                # Skip if not our month
+                if month != self.month or year_parsed != self.year:
+                    continue
+
+                # Find event link
+                link = div.find('a', href=re.compile(r'/event/'))
+                if not link:
+                    continue
+
+                url = link.get('href', '')
+                if url.startswith('/'):
+                    url = f"https://www.forumkarlin.cz{url}"
+
+                # Skip duplicates (same event appearing multiple times)
+                if url in seen_urls:
+                    continue
+                seen_urls.add(url)
+
+                # Extract artist from text
+                # Format: "ARTIST|DD. MM. YYYY|day_abbrev|Additional info"
+                parts = text.split('|')
+                artist = parts[0].strip() if parts else ""
+
+                if not artist:
+                    # Fallback: get from link text
+                    artist = link.get_text(strip=True)
+
+                # Look for time (19:00, 20:00, etc.)
+                time_match = re.search(r'(\d{1,2}):(\d{2})', text)
+                time_str = f"{time_match.group(1)}:{time_match.group(2)}" if time_match else "20:00"
+
+                # Check for status (SOLD OUT, etc.)
+                status = None
+                if 'SOLD OUT' in text.upper():
+                    status = "SOLD OUT"
+
+                # Create event
+                event = {
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url,
+                    'status': status
+                }
+
+                events.append(event)
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        # Sort by day
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} events")
+        return self.events
+
+
 def main():
     """Test browser scrapers"""
     # November 2025

@@ -64,16 +64,19 @@
 [x] Test full automated run: 5/26 venues without Claude ✅
 [x] Implement Jazz Dock Playwright scraper (20 events ✅)
 [x] Test full automated run: 6/26 venues without Claude ✅
+[x] Implement Forum Karlín Playwright scraper (6 events ✅)
+[x] Test full automated run: 7/26 venues without Claude ✅
 
-**Current Status - 6/26 FULLY AUTOMATED (23% complete):**
+**Current Status - 7/26 FULLY AUTOMATED (27% complete):**
 - ✅ **Palác Akropolis** (29 events) - Beautiful Soup - **AUTOMATED**
 - ✅ **Rock Café** (23 events) - Playwright - **AUTOMATED**
 - ✅ **Lucerna Music Bar** (31 events) - Playwright - **AUTOMATED**
 - ✅ **Roxy** (25 events) - Playwright - **AUTOMATED**
 - ✅ **Vagon** (26 events) - Playwright - **AUTOMATED**
 - ✅ **Jazz Dock** (20 events) - Playwright - **AUTOMATED**
+- ✅ **Forum Karlín** (6 events) - Playwright - **AUTOMATED**
 
-**Total: 154 events from 6 venues**
+**Total: 160 events from 7 venues**
 
 **Next Steps (Batch 1 - deferred):**
 [ ] Implement Cross Club Playwright scraper (DEFERRED - complex JavaScript calendar)
@@ -94,7 +97,7 @@
 [ ] Jazz Dock (8-20 expected) - Playwright
 
 **Batch 2: Medium venues**
-[ ] Forum Karlín (5-15 expected) - Playwright
+[x] Forum Karlín (5-15 expected) - Playwright ✅ 6 events
 [ ] Lucerna Velký sál (8-20 expected) - Playwright
 [ ] MeetFactory (3-12 expected) - Playwright
 [ ] Malostranská beseda (5-15 expected) - Playwright
