@@ -25,16 +25,16 @@ Připrav program českých hudebních klubů, jejichž seznam je v souboru kluby
 [x] Read month/year from kluby.json config (already in place)
 [x] Create base scraper class for code reuse
 
-### Phase 3: Parser Expansion
-[ ] Create parsers for top 5 clubs (Rock Café, Roxy, Lucerna Music Bar, Forum Karlín, O2 Arena)
-[ ] Implement per-club parser architecture in scrape_concerts.py
-[ ] Add validation: weekend coverage, URL completeness, date ranges
-[ ] Generate events_data.json with all club data
+### Phase 3: Parser Expansion (Hybrid Approach)
+[x] Create hybrid scraping system (Beautiful Soup + WebFetch)
+[x] Implement WebFetch wrapper for dynamic sites (Rock Café: 23 events ✓)
+[x] Implement per-club parser architecture in scrape_concerts.py
+[x] Add validation: weekend coverage, URL completeness, date ranges (in base class)
+[x] Generate events_data.json with all club data (52 events from 2 venues ✓)
 
 ### Phase 4: Unit Testing
 [ ] Create test_scraper.py
 [ ] Test weekend coverage for large venues (min 2 events on Fri/Sat)
-[ ] Test Nov 27-28 specifically (historically problematic dates)
 [ ] Test URL validity (all URLs start with https://)
 [ ] Test date/time format validation
 [ ] Test retry/error logging

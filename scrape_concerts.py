@@ -36,7 +36,9 @@ def load_config(config_file: str = 'kluby.json') -> Dict:
 
 def scrape_venue(venue: Dict, month: int, year: int) -> Tuple[List[Dict], Dict, Optional[Exception]]:
     """
-    Scrape a single venue with error handling
+    Scrape a single venue with error handling (Hybrid approach)
+
+    Uses Beautiful Soup for static sites, WebFetch data for dynamic sites.
 
     Args:
         venue: Venue configuration dict from kluby.json
@@ -56,25 +58,40 @@ def scrape_venue(venue: Dict, month: int, year: int) -> Tuple[List[Dict], Dict, 
     max_events = venue.get('max_akci', 100)
 
     try:
-        # Determine which scraper to use based on venue name
-        # For now, only Palác Akropolis is implemented
+        # HYBRID APPROACH: Try WebFetch data first, then Beautiful Soup
+
+        # 1. Check if we have WebFetch data for this venue
+        from webfetch_data import get_webfetch_data
+        webfetch_data = get_webfetch_data(venue_name, month, year)
+
+        if webfetch_data:
+            # Use WebFetch scraper
+            from webfetch_scraper import get_webfetch_scraper
+            from webfetch_scraper import store_webfetch_result
+
+            store_webfetch_result(venue_name, webfetch_data)
+            scraper = get_webfetch_scraper(venue_name, month, year)
+
+            if scraper:
+                logger.info(f"{venue_name}: Using WebFetch data (dynamic content)")
+                events = scraper.scrape()
+                validation = scraper.validate(min_events=min_events, max_events=max_events)
+                logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+                return events, validation, None
+
+        # 2. Try Beautiful Soup scraper (static HTML)
         if venue_name == "Palác Akropolis":
             from scraper_akropolis import AkropolisScraper
+            logger.info(f"{venue_name}: Using Beautiful Soup (static HTML)")
             scraper = AkropolisScraper(month=month, year=year)
-        else:
-            # Venue not yet implemented
-            logger.warning(f"No scraper implemented for {venue_name}")
-            return [], None, Exception(f"No scraper for {venue_name}")
+            events = scraper.scrape()
+            validation = scraper.validate(min_events=min_events, max_events=max_events)
+            logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+            return events, validation, None
 
-        # Scrape events
-        events = scraper.scrape()
-
-        # Validate
-        validation = scraper.validate(min_events=min_events, max_events=max_events)
-
-        logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
-
-        return events, validation, None
+        # 3. No scraper available
+        logger.warning(f"No scraper implemented for {venue_name}")
+        return [], None, Exception(f"No scraper for {venue_name}")
 
     except Exception as e:
         logger.error(f"Failed to scrape {venue_name}: {e}")
