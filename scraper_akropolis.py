@@ -10,15 +10,14 @@ HTML Pattern (verified via WebFetch):
 </a>
 """
 
-import requests
 from bs4 import BeautifulSoup
 import json
 import re
-from datetime import datetime
 from typing import List, Dict, Optional
+from base_scraper import BaseScraper
 
 
-class AkropolisScraper:
+class AkropolisScraper(BaseScraper):
     """Scrapes concert data from Palác Akropolis"""
 
     BASE_URL = "https://palacakropolis.cz"
@@ -31,22 +30,13 @@ class AkropolisScraper:
             month: Month number (1-12)
             year: Year (e.g., 2025)
         """
-        self.month = month
-        self.year = year
-        self.events: List[Dict] = []
-
-    def fetch_html(self) -> str:
-        """Fetch HTML from venue website"""
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        }
-
-        try:
-            response = requests.get(self.BASE_URL, headers=headers, timeout=10)
-            response.raise_for_status()
-            return response.text
-        except requests.RequestException as e:
-            raise Exception(f"Failed to fetch {self.BASE_URL}: {e}")
+        super().__init__(
+            venue_name=self.VENUE_NAME,
+            url=self.BASE_URL,
+            city=self.CITY,
+            month=month,
+            year=year
+        )
 
     def parse_event_from_td(self, td_tag) -> Optional[Dict]:
         """
@@ -141,60 +131,8 @@ class AkropolisScraper:
 
         self.events = sorted(unique_events, key=lambda x: x['day'])
 
-        print(f"[OK] Found {len(self.events)} events")
+        self.logger.info(f"Found {len(self.events)} events")
         return self.events
-
-    def validate(self) -> Dict:
-        """
-        Validate scraped data
-
-        Returns:
-            Dict with validation results
-        """
-        total = len(self.events)
-
-        # Check for Nov 27-28 (historically problematic)
-        has_27 = any(e['day'] == 27 for e in self.events)
-        has_28 = any(e['day'] == 28 for e in self.events)
-
-        # Count weekend events (assuming November 2025)
-        # Nov 2025: Fri=7,14,21,28  Sat=1,8,15,22,29  Sun=2,9,16,23,30
-        weekends = {1,2, 7,8,9, 14,15,16, 21,22,23, 28,29,30}
-        weekend_events = [e for e in self.events if e['day'] in weekends]
-
-        # Expected range from kluby.json: min_akci=15, max_akci=30
-        is_green = total >= 15
-        is_yellow = 7.5 <= total < 15  # 50% of min
-        is_red = total < 7.5
-
-        status = 'GREEN' if is_green else ('YELLOW' if is_yellow else 'RED')
-
-        return {
-            'venue': self.VENUE_NAME,
-            'total_events': total,
-            'weekend_events': len(weekend_events),
-            'has_nov_27': has_27,
-            'has_nov_28': has_28,
-            'status': status,
-            'expected_range': '15-30',
-            'validation': 'PASS' if is_green and has_27 and has_28 else 'FAIL'
-        }
-
-    def save_json(self, filename: str = 'palac_akropolis_events.json'):
-        """Save events to JSON file"""
-        output = {
-            'venue': self.VENUE_NAME,
-            'city': self.CITY,
-            'month': self.month,
-            'year': self.year,
-            'total_events': len(self.events),
-            'events': self.events
-        }
-
-        with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(output, f, ensure_ascii=False, indent=2)
-
-        print(f"[OK] Saved to {filename}")
 
 
 def main():
@@ -205,8 +143,8 @@ def main():
     # Scrape
     events = scraper.scrape()
 
-    # Validate
-    validation = scraper.validate()
+    # Validate (min_akci=15, max_akci=30 from kluby.json)
+    validation = scraper.validate(min_events=15, max_events=30)
 
     print("\n" + "="*60)
     print("VALIDATION REPORT")
@@ -214,19 +152,20 @@ def main():
     print(f"Venue: {validation['venue']}")
     print(f"Total Events: {validation['total_events']} (expected: {validation['expected_range']})")
     print(f"Weekend Events: {validation['weekend_events']}")
-    print(f"Has Nov 27: {'YES' if validation['has_nov_27'] else 'NO'}")
-    print(f"Has Nov 28: {'YES' if validation['has_nov_28'] else 'NO'}")
+    if validation['has_nov_27'] is not None:
+        print(f"Has Nov 27: {'YES' if validation['has_nov_27'] else 'NO'}")
+        print(f"Has Nov 28: {'YES' if validation['has_nov_28'] else 'NO'}")
     print(f"Status: {validation['status']}")
     print(f"Validation: {validation['validation']}")
     print("="*60)
 
     # Save
-    scraper.save_json()
+    scraper.save_json('palac_akropolis_events.json')
 
     # Show sample events
     print("\nSample Events (first 5):")
     for event in events[:5]:
-        print(f"  {event['date']} - {event['artist']}")
+        print(f"  {event['date']} - {event['artist'][:50]}")
         print(f"    {event['url']}")
 
 

@@ -20,10 +20,10 @@ Připrav program českých hudebních klubů, jejichž seznam je v souboru kluby
 
 ### Phase 2: Framework & Configuration
 [x] Create requirements.txt (requests, beautifulsoup4, lxml, requests-cache, pytest)
-[ ] Create scrape_concerts.py main framework with caching
-[ ] Add retry strategy (attempt other clubs first, log failures)
-[ ] Read month/year from kluby.json config (already in place)
-[ ] Create base scraper class for code reuse
+[x] Create scrape_concerts.py main framework with caching
+[x] Add retry strategy (attempt other clubs first, log failures)
+[x] Read month/year from kluby.json config (already in place)
+[x] Create base scraper class for code reuse
 
 ### Phase 3: Parser Expansion
 [ ] Create parsers for top 5 clubs (Rock Café, Roxy, Lucerna Music Bar, Forum Karlín, O2 Arena)
