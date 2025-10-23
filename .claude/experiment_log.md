@@ -269,3 +269,58 @@
 ✅ **Rule:** When a venue requires significantly more debugging than others, defer it and maximize coverage with simpler venues first. One complex venue isn't worth blocking progress on 5+ simple ones.
 
 ---
+
+## Issue: MeetFactory lazy loading missing 10 events
+**Date:** 2025-10-23
+
+- **Context:** Initial MeetFactory scraper only found 5 events, expected 15 based on manual count
+- **Failure Type:** Lazy loading/infinite scroll - events loaded dynamically as user scrolls down page
+
+### 📎 Proof
+- First implementation: 5 events from 10 visible event boxes
+- After adding infinite scroll: 15 events from 41 total event boxes
+- User feedback: "There should be 15 events on the Meat Factory website. The tricky part is that the other events are loaded only when you scroll down on the screen automatically."
+
+### 📏 Rule Added
+- `.claude/docs/rules-learned.md`: Implement infinite scroll for websites with lazy-loaded content
+- Enforcement: Scroll detection loop with height comparison, max 10 scrolls safety limit
+
+### Technical Solution
+```python
+def fetch_with_infinite_scroll(self) -> str:
+    # Scroll down until page height stops changing
+    previous_height = 0
+    scroll_attempts = 0
+    max_scrolls = 10
+
+    while scroll_attempts < max_scrolls:
+        current_height = page.evaluate("document.body.scrollHeight")
+
+        if current_height == previous_height:
+            break  # Reached bottom
+
+        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+        page.wait_for_timeout(1500)  # Wait for content to load
+
+        previous_height = current_height
+        scroll_attempts += 1
+```
+
+### Resolution
+- Implemented `fetch_with_infinite_scroll()` method in MeetFactoryBrowserScraper
+- Scrolls down page, waits 1.5s between scrolls for AJAX content to load
+- Logs progress: "Scroll N: Found X event boxes"
+- Successfully loaded all 41 event boxes → extracted 15 November events
+- Updated plan.md: 175 total events (was 165), 8/26 venues (31%)
+
+### Metrics
+- **Before:** 5 events, 10 event boxes loaded
+- **After:** 15 events, 41 event boxes loaded
+- **Scrolls required:** 5 (reached bottom when height stopped changing)
+- **Status:** GREEN (within 3-12 expected range)
+
+### Commit
+- `ae3c0e9`: Initial implementation (5 events)
+- `b3b246b`: Fixed with infinite scroll (15 events)
+
+---

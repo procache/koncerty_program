@@ -345,6 +345,63 @@ class RoxyScraper(BaseScraper):
 
 ---
 
+## Playwright & Browser Automation
+
+### Rule: Implement infinite scroll for lazy-loaded content
+**Why:** Many modern websites use infinite scroll or lazy loading to load content dynamically as the user scrolls. Without scrolling, Playwright only captures initially visible content, missing events below the fold.
+
+**Signs a website needs infinite scroll:**
+- Event count significantly lower than expected
+- Page shows loading spinners or "Load more" buttons
+- Network tab shows AJAX requests triggered by scrolling
+- Manual inspection shows more events when scrolling
+
+**Enforcement:**
+```python
+def fetch_with_infinite_scroll(self) -> str:
+    """Scroll down page until no new content loads"""
+    previous_height = 0
+    scroll_attempts = 0
+    max_scrolls = 10  # Safety limit
+
+    while scroll_attempts < max_scrolls:
+        current_height = page.evaluate("document.body.scrollHeight")
+
+        if current_height == previous_height:
+            # Height unchanged = reached bottom
+            break
+
+        # Scroll to bottom
+        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+
+        # Wait for AJAX content to load
+        page.wait_for_timeout(1500)  # 1.5 seconds
+
+        previous_height = current_height
+        scroll_attempts += 1
+
+    return page.content()
+```
+
+**Settings:**
+- Wait time: 1.5 seconds between scrolls (adjust per site)
+- Max scrolls: 10 (prevents infinite loops)
+- Break condition: Page height unchanged = no new content
+
+**Example - MeetFactory:**
+- Without scroll: 5 events from 10 visible boxes
+- With scroll: 15 events from 41 total boxes
+- Scrolls needed: 5 (reached bottom when height stopped changing)
+
+**Testing:**
+```python
+# Log progress to verify scrolling works
+event_count = page.evaluate("document.querySelectorAll('div.ab-box').length")
+logger.info(f"Scroll {scroll_attempts}: Found {event_count} event boxes")
+```
+
+---
+
 ## Future Python Improvements
 
 ### Planned enhancements for Phase 2-6:
