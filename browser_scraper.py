@@ -210,8 +210,475 @@ class RockCafeBrowserScraper(BrowserScraper):
         return self.events
 
 
+class LucernaMusicBarBrowserScraper(BrowserScraper):
+    """Scrapes Lucerna Music Bar using Playwright"""
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            venue_name="Lucerna Music Bar",
+            url="https://musicbar.cz/en/program/",
+            city="Praha",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """
+        Main scraping method using Playwright
+
+        Returns:
+            List of event dictionaries
+        """
+        self.logger.info(f"Scraping {self.venue_name} for {self.month}/{self.year}...")
+
+        # Fetch HTML with browser
+        html = self.fetch_html_with_browser(wait_for_selector='a.program-item')
+
+        # Parse with Beautiful Soup
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find all event links with class="program-item"
+        event_links = soup.find_all('a', class_='program-item')
+
+        events = []
+        for link in event_links:
+            href = link.get('href', '')
+            if not href:
+                continue
+
+            # Get full text
+            text = link.get_text(separator=' ', strip=True)
+
+            # Look for date pattern "day/month" (e.g., "1/11", "23/10")
+            date_match = re.search(r'(\d{1,2})/(\d{1,2})', text)
+            if not date_match:
+                continue
+
+            day = int(date_match.group(1))
+            month = int(date_match.group(2))
+
+            # Filter by target month
+            if month != self.month:
+                continue
+
+            # Build full URL
+            if href.startswith('http'):
+                url = href
+            elif href.startswith('/'):
+                url = f"https://musicbar.cz{href}"
+            else:
+                url = f"https://musicbar.cz/{href}"
+
+            # Extract time
+            time_match = re.search(r'(\d{1,2}):(\d{2})', text)
+            time_str = f"{time_match.group(1)}:{time_match.group(2)}" if time_match else None
+
+            # Extract artist - remove date/time info from text
+            artist = text
+            # Remove "Today/Tomorrow/Monday/etc"
+            artist = re.sub(r'^(Today|Tomorrow|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s*', '', artist)
+            # Remove date pattern
+            artist = re.sub(r'\d{1,2}/\d{1,2}', '', artist)
+            # Remove time
+            artist = re.sub(r'\d{1,2}:\d{2}', '', artist)
+            # Remove status text at end
+            artist = re.sub(r'(Buy tickets|Tickets at the door|Sold out|More info|Postponed).*$', '', artist, flags=re.I)
+            # Clean whitespace
+            artist = re.sub(r'\s+', ' ', artist).strip()
+
+            if not artist or len(artist) < 2:
+                continue
+
+            # Extract status
+            status = None
+            if 'sold out' in text.lower() or 'vyprodáno' in text.lower():
+                status = 'sold_out'
+            elif 'postponed' in text.lower() or 'odloženo' in text.lower():
+                status = 'postponed'
+
+            date_str = f"{day:02d}.{month:02d}.{self.year}"
+
+            events.append({
+                'date': date_str,
+                'day': day,
+                'month': month,
+                'year': self.year,
+                'time': time_str,
+                'artist': artist,
+                'venue': self.venue_name,
+                'city': self.city,
+                'url': url,
+                'status': status
+            })
+
+        # Remove duplicates (same URL)
+        seen_urls = set()
+        unique_events = []
+        for event in events:
+            if event['url'] not in seen_urls:
+                seen_urls.add(event['url'])
+                unique_events.append(event)
+
+        self.events = sorted(unique_events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} events")
+        return self.events
+
+
+class RoxyBrowserScraper(BrowserScraper):
+    """Scrapes Roxy using Playwright"""
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            venue_name="Roxy",
+            url="https://www.roxy.cz/tickets/",
+            city="Praha",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """
+        Main scraping method using Playwright
+
+        Returns:
+            List of event dictionaries
+        """
+        self.logger.info(f"Scraping {self.venue_name} for {self.month}/{self.year}...")
+
+        # Fetch HTML with browser - wait longer for dynamic content
+        html = self.fetch_html_with_browser(wait_for_selector='a.item[href*="/events/detail/"]', timeout=60000)
+
+        # Parse with Beautiful Soup
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find all event links with href containing "/events/detail/"
+        event_links = soup.find_all('a', class_='item', href=re.compile(r'/events/detail/'))
+
+        events = []
+        for link in event_links:
+            href = link.get('href', '')
+            if not href:
+                continue
+
+            # Get full text
+            text = link.get_text(separator=' ', strip=True)
+
+            # Look for date pattern with day abbreviation: "So 01/11" or just "01/11"
+            date_match = re.search(r'(\d{1,2})/(\d{1,2})', text)
+            if not date_match:
+                continue
+
+            day = int(date_match.group(1))
+            month = int(date_match.group(2))
+
+            # Filter by target month
+            if month != self.month:
+                continue
+
+            # Build full URL
+            if href.startswith('http'):
+                url = href
+            elif href.startswith('/'):
+                url = f"https://www.roxy.cz{href}"
+            else:
+                url = f"https://www.roxy.cz/{href}"
+
+            # Extract artist - remove date/time info from text
+            artist = text
+            # Remove day abbreviations
+            artist = re.sub(r'^(Po|Út|St|Čt|Pá|So|Ne|Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+', '', artist, flags=re.I)
+            # Remove date pattern
+            artist = re.sub(r'\d{1,2}/\d{1,2}', '', artist)
+            # Remove "VYPRODÁNO:" prefix
+            artist = re.sub(r'^VYPRODÁNO:\s*', '', artist, flags=re.I)
+            artist = re.sub(r'^SOLD OUT:\s*', '', artist, flags=re.I)
+            # Clean whitespace
+            artist = re.sub(r'\s+', ' ', artist).strip()
+
+            if not artist or len(artist) < 2:
+                continue
+
+            # Extract time if available (less common on Roxy)
+            time_match = re.search(r'(\d{1,2}):(\d{2})', text)
+            time_str = f"{time_match.group(1)}:{time_match.group(2)}" if time_match else None
+
+            # Extract status
+            status = None
+            if 'vyprodáno' in text.lower() or 'sold out' in text.lower():
+                status = 'sold_out'
+
+            date_str = f"{day:02d}.{month:02d}.{self.year}"
+
+            events.append({
+                'date': date_str,
+                'day': day,
+                'month': month,
+                'year': self.year,
+                'time': time_str,
+                'artist': artist,
+                'venue': self.venue_name,
+                'city': self.city,
+                'url': url,
+                'status': status
+            })
+
+        # Remove duplicates (same URL)
+        seen_urls = set()
+        unique_events = []
+        for event in events:
+            if event['url'] not in seen_urls:
+                seen_urls.add(event['url'])
+                unique_events.append(event)
+
+        self.events = sorted(unique_events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} events")
+        return self.events
+
+
+class VagonBrowserScraper(BrowserScraper):
+    """Scrapes Vagon using Playwright"""
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            venue_name="Vagon",
+            url="https://www.vagon.cz/next.php",
+            city="Praha",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """
+        Main scraping method using Playwright
+
+        Returns:
+            List of event dictionaries
+        """
+        self.logger.info(f"Scraping {self.venue_name} for {self.month}/{self.year}...")
+
+        # Fetch HTML with browser
+        html = self.fetch_html_with_browser(wait_for_selector='table.table')
+
+        # Parse with Beautiful Soup
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find the program table
+        table = soup.find('table', class_='table')
+        if not table:
+            self.logger.warning("Could not find program table")
+            return []
+
+        # Find all table rows
+        rows = table.find_all('tr')
+
+        events = []
+        for row in rows:
+            tds = row.find_all('td')
+            if len(tds) < 4:
+                continue
+
+            # Structure: [price, day_name, day_number, program, note]
+            day_text = tds[2].get_text(strip=True)
+
+            # Skip if not a number
+            try:
+                day = int(day_text)
+            except ValueError:
+                continue
+
+            # Get program column
+            program_td = tds[3]
+            program_text = program_td.get_text(separator=' ', strip=True)
+
+            # Skip closed days
+            if 'ZAVŘENO' in program_text or 'CLOSED' in program_text:
+                continue
+
+            # Skip if no content
+            if not program_text or len(program_text) < 3:
+                continue
+
+            # Extract artist names from links
+            links = program_td.find_all('a', href=True)
+            artists = []
+            for link in links:
+                artist_name = link.get_text(strip=True)
+                if artist_name and len(artist_name) > 1:
+                    artists.append(artist_name)
+
+            # If no links, use text content
+            if not artists:
+                # Clean the text
+                artist = program_text
+                # Remove time
+                artist = re.sub(r'\d{1,2}:\d{2}', '', artist)
+                # Remove common prefixes
+                artist = re.sub(r'^(Koncert v rámci|Koncert|V rámci).*?:', '', artist, flags=re.I)
+                artist = re.sub(r'\s+', ' ', artist).strip()
+                if artist and len(artist) > 2:
+                    artists = [artist]
+
+            if not artists:
+                continue
+
+            # Join multiple artists
+            artist = ' + '.join(artists)
+
+            # Extract time
+            time_match = re.search(r'(\d{1,2}):(\d{2})', program_text)
+            time_str = f"{time_match.group(1)}:{time_match.group(2)}" if time_match else "21:00"  # Default from page
+
+            # Build URL - use first link if available
+            url = links[0].get('href') if links else f"https://www.vagon.cz/next.php#{day}"
+
+            date_str = f"{day:02d}.{self.month:02d}.{self.year}"
+
+            events.append({
+                'date': date_str,
+                'day': day,
+                'month': self.month,
+                'year': self.year,
+                'time': time_str,
+                'artist': artist,
+                'venue': self.venue_name,
+                'city': self.city,
+                'url': url,
+                'status': None
+            })
+
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} events")
+        return self.events
+
+
+class JazzDockBrowserScraper(BrowserScraper):
+    """
+    Jazz Dock scraper using Playwright
+    URL: https://www.jazzdock.cz/en/program/2025/11
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url=f"https://www.jazzdock.cz/en/program/{year}/{month:02d}",
+            venue_name="Jazz Dock",
+            city="Praha",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Main scraping method using Playwright"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+
+        # Fetch HTML with browser
+        html = self.fetch_html_with_browser(wait_for_selector='div.program-item')
+
+        # Parse HTML
+        return self.parse_html(html)
+
+    def parse_html(self, html: str) -> List[Dict]:
+        """Parse Jazz Dock HTML and extract events"""
+
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find all program items
+        program_items = soup.find_all('div', class_='program-item')
+        self.logger.info(f"Found {len(program_items)} program items")
+
+        events = []
+        for item in program_items:
+            try:
+                # Find date text: "Sa 01. 11. from 15:00"
+                date_elem = item.find(class_=re.compile('date', re.I))
+                if not date_elem:
+                    continue
+
+                date_text = date_elem.get_text(strip=True)
+
+                # Parse date: "Sa 01. 11. from 15:00"
+                # Pattern: day_abbrev DD. MM. from HH:MM
+                date_match = re.search(r'(\d{1,2})\.\s*(\d{1,2})\.\s*from\s*(\d{1,2}):(\d{2})', date_text)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+                month = int(date_match.group(2))
+                hour = date_match.group(3)
+                minute = date_match.group(4)
+
+                # Skip if not our month
+                if month != self.month:
+                    continue
+
+                time_str = f"{hour}:{minute}"
+
+                # Find artist name - get full text and parse
+                full_text = item.get_text(separator='|', strip=True)
+                # Format: "Sa 01. 11. from 15:00|Artist Name|Genre|Description..."
+                parts = full_text.split('|')
+
+                artist = ""
+                if len(parts) >= 2:
+                    # Artist is usually the second part (after date)
+                    artist = parts[1].strip()
+
+                # Sometimes there's a subtitle or additional info
+                # Skip "Jazz Dock to Kids" label and "Concerts package" labels
+                if len(parts) >= 3 and not any(skip in parts[1] for skip in ['Jazz Dock to Kids', 'Concerts package']):
+                    artist = parts[1].strip()
+                elif len(parts) >= 3:
+                    # If part[1] is a label, use part[2]
+                    artist = parts[2].strip()
+
+                if not artist:
+                    # Fallback: try to find link text
+                    link = item.find('a', href=re.compile(r'/koncert/'))
+                    if link:
+                        artist = link.get_text(strip=True)
+
+                # Find URL
+                link = item.find('a', href=re.compile(r'/koncert/'))
+                url = ""
+                if link:
+                    url = link.get('href', '')
+                    if url.startswith('/'):
+                        url = f"https://www.jazzdock.cz{url}"
+
+                if not artist:
+                    continue
+
+                # Create event
+                event = {
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url,
+                    'status': None
+                }
+
+                events.append(event)
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        # Sort by day
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} events")
+        return self.events
+
+
 def main():
-    """Test Rock Café browser scraper"""
+    """Test browser scrapers"""
     # November 2025
     scraper = RockCafeBrowserScraper(month=11, year=2025)
 

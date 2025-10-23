@@ -58,38 +58,56 @@ def scrape_venue(venue: Dict, month: int, year: int) -> Tuple[List[Dict], Dict, 
     max_events = venue.get('max_akci', 100)
 
     try:
-        # HYBRID APPROACH: Try WebFetch data first, then Beautiful Soup
+        # AUTOMATED APPROACH: Playwright → Beautiful Soup → Fail
+        # (WebFetch is now only for manual debugging with Claude)
 
-        # 1. Check if we have WebFetch data for this venue
-        from webfetch_data import get_webfetch_data
-        webfetch_data = get_webfetch_data(venue_name, month, year)
-
-        if webfetch_data:
-            # Use WebFetch scraper
-            from webfetch_scraper import get_webfetch_scraper
-            from webfetch_scraper import store_webfetch_result
-
-            store_webfetch_result(venue_name, webfetch_data)
-            scraper = get_webfetch_scraper(venue_name, month, year)
-
-            if scraper:
-                logger.info(f"{venue_name}: Using WebFetch data (dynamic content)")
-                events = scraper.scrape()
-                validation = scraper.validate(min_events=min_events, max_events=max_events)
-                logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
-                return events, validation, None
-
-        # 2. Try Playwright scraper (JavaScript sites)
+        # 1. Try Playwright scraper (JavaScript sites) - AUTOMATED
         if venue_name == "Rock Café":
             from browser_scraper import RockCafeBrowserScraper
-            logger.info(f"{venue_name}: Using Playwright (JavaScript site)")
+            logger.info(f"{venue_name}: Using Playwright (automated)")
             scraper = RockCafeBrowserScraper(month=month, year=year)
             events = scraper.scrape()
             validation = scraper.validate(min_events=min_events, max_events=max_events)
             logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
             return events, validation, None
 
-        # 3. Try Beautiful Soup scraper (static HTML)
+        if venue_name == "Lucerna Music Bar":
+            from browser_scraper import LucernaMusicBarBrowserScraper
+            logger.info(f"{venue_name}: Using Playwright (automated)")
+            scraper = LucernaMusicBarBrowserScraper(month=month, year=year)
+            events = scraper.scrape()
+            validation = scraper.validate(min_events=min_events, max_events=max_events)
+            logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+            return events, validation, None
+
+        if venue_name == "Roxy":
+            from browser_scraper import RoxyBrowserScraper
+            logger.info(f"{venue_name}: Using Playwright (automated)")
+            scraper = RoxyBrowserScraper(month=month, year=year)
+            events = scraper.scrape()
+            validation = scraper.validate(min_events=min_events, max_events=max_events)
+            logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+            return events, validation, None
+
+        if venue_name == "Vagon":
+            from browser_scraper import VagonBrowserScraper
+            logger.info(f"{venue_name}: Using Playwright (automated)")
+            scraper = VagonBrowserScraper(month=month, year=year)
+            events = scraper.scrape()
+            validation = scraper.validate(min_events=min_events, max_events=max_events)
+            logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+            return events, validation, None
+
+        if venue_name == "Jazz Dock":
+            from browser_scraper import JazzDockBrowserScraper
+            logger.info(f"{venue_name}: Using Playwright (automated)")
+            scraper = JazzDockBrowserScraper(month=month, year=year)
+            events = scraper.scrape()
+            validation = scraper.validate(min_events=min_events, max_events=max_events)
+            logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+            return events, validation, None
+
+        # 2. Try Beautiful Soup scraper (static HTML) - AUTOMATED
         if venue_name == "Palác Akropolis":
             from scraper_akropolis import AkropolisScraper
             logger.info(f"{venue_name}: Using Beautiful Soup (static HTML)")
@@ -98,6 +116,25 @@ def scrape_venue(venue: Dict, month: int, year: int) -> Tuple[List[Dict], Dict, 
             validation = scraper.validate(min_events=min_events, max_events=max_events)
             logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
             return events, validation, None
+
+        # 3. Fallback: Check if we have WebFetch data (manual debug mode)
+        from webfetch_data import get_webfetch_data
+        webfetch_data = get_webfetch_data(venue_name, month, year)
+
+        if webfetch_data:
+            # Use WebFetch scraper (not automated - for development only)
+            from webfetch_scraper import get_webfetch_scraper
+            from webfetch_scraper import store_webfetch_result
+
+            store_webfetch_result(venue_name, webfetch_data)
+            scraper = get_webfetch_scraper(venue_name, month, year)
+
+            if scraper:
+                logger.info(f"{venue_name}: Using WebFetch data (MANUAL DEBUG MODE)")
+                events = scraper.scrape()
+                validation = scraper.validate(min_events=min_events, max_events=max_events)
+                logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+                return events, validation, None
 
         # 4. No scraper available
         logger.warning(f"No scraper implemented for {venue_name}")

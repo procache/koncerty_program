@@ -1,16 +1,37 @@
 # Plan
 
-> Claude executes tasks from here. Update by ticking `[ ] → [x]` when complete.  
+> Claude executes tasks from here. Update by ticking `[ ] → [x]` when complete.
 > Claude may only tick after GREEN (tests/build pass, git clean).
 
 
 ## Overall
 
-Připrav program českých hudebních klubů, jejichž seznam je v souboru kluby.md. Všechny úkoly jsou v seznamu v sekci Now. Zajímá mě program na listopad 2025. Vytvoř jednoduchou HTML stránku, kde budou seřazené hudební akce podle datumu. U každé akce bude odkaz na její URL a to, jestli se to koná v Praze nebo Plzni. Pro každé datum budou uvedené akce ve všech klubech, kde se něco koná. Zajímá mě jenom hudba, ne divadlo ani sportovní akce.
+**Project Goal:** Fully automated web scraper for concert programs from 26 music venues in Prague and Plzeň.
 
-## Now - Python Scraper Implementation
+**Requirements:**
+- Run monthly: `python scrape_concerts.py` → generates events_data.json
+- Generate HTML page: sorted by date, with venue URLs, city filtering
+- Music only (exclude theatre, sports)
+- Must work WITHOUT Claude interaction (Playwright-based, not WebFetch)
 
-### Phase 1: Proof of Concept - Palác Akropolis
+**Current Month:** November 2025
+
+---
+
+## Now - Playwright-Based Automation (CRITICAL PATH)
+
+**🎯 Goal:** FULLY AUTOMATED monthly scraping - no manual intervention needed
+
+**Strategy:** Playwright for JavaScript sites → Beautiful Soup for static HTML → Fail gracefully
+
+**⚠️ CRITICAL RULE: NO WebFetch allowed!**
+- WebFetch requires Claude interaction = NOT AUTOMATED
+- All scrapers MUST use Playwright or Beautiful Soup ONLY
+- WebFetch is deprecated and only kept for debugging reference
+
+---
+
+### Phase 1: Proof of Concept ✅ DONE
 [x] Analyze Palác Akropolis HTML structure (events in <td> elements)
 [x] Create scraper_akropolis.py with Beautiful Soup parser
 [x] Extract events with: date, time, artist, venue, URL
@@ -18,39 +39,90 @@ Připrav program českých hudebních klubů, jejichž seznam je v souboru kluby
 [x] Validate: 29 events including Nov 27-28 ✓ GREEN STATUS
 [x] Save output to palac_akropolis_events.json
 
-### Phase 2: Framework & Configuration
-[x] Create requirements.txt (requests, beautifulsoup4, lxml, requests-cache, pytest)
+---
+
+### Phase 2: Framework & Configuration ✅ DONE
+[x] Create requirements.txt (requests, beautifulsoup4, lxml, requests-cache, pytest, playwright)
 [x] Create scrape_concerts.py main framework with caching
 [x] Add retry strategy (attempt other clubs first, log failures)
 [x] Read month/year from kluby.json config (already in place)
 [x] Create base scraper class for code reuse
 
-### Phase 3: Parser Expansion (Hybrid Approach)
-[x] Create hybrid scraping system (Beautiful Soup + WebFetch)
-[x] Implement WebFetch wrapper for dynamic sites (Rock Café: 23 events ✓)
-[x] Implement per-club parser architecture in scrape_concerts.py
-[x] Add validation: weekend coverage, URL completeness, date ranges (in base class)
-[x] Generate events_data.json with all club data (52 events from 2 venues ✓)
+---
 
-### Phase 3.5: Complete All 26 Venues ⚠️ CRITICAL
-[ ] Use WebFetch to collect November 2025 data for remaining 24 clubs
-[ ] Add WebFetch data to webfetch_data.py for each club
-[ ] Create parser functions in webfetch_scraper.py for each club
-[ ] Test complete scraping: target 200+ total events from all 26 venues
-[ ] Validate: All 30 days covered, weekend coverage 100%
+### Phase 3: Automation Refactor ⚠️ IN PROGRESS
 
-**Remaining clubs (24):**
-Praha: O2 Arena, O2 Universum, Sportovní hala Fortuna, Forum Karlín, Lucerna Velký sál, Roxy, MeetFactory, Lucerna Music Bar, Vagon, Jazz Dock, U Staré Paní, Reduta Jazz Club, Malostranská beseda, Cross Club, Watt Music Club
-Plzeň: Buena Vista Club, Divadlo Pod lampou, Kulturní dům Šeříkovka, Kulturní dům JAS, Dům hudby Plzeň, Moving Station, Měšťanská beseda, LOGSPEED CZ Aréna
+**Completed:**
+[x] Create BrowserScraper base class (browser_scraper.py)
+[x] Refactor scrape_concerts.py: Playwright → Beautiful Soup → WebFetch (fallback)
+[x] Implement Rock Café Playwright scraper (AUTOMATED ✅)
+[x] Test automated run for Rock Café: 23 events ✓
+[x] Implement Lucerna Music Bar Playwright scraper (31 events ✅)
+[x] Implement Roxy Playwright scraper (25 events ✅)
+[x] Test full automated run: 4/26 venues without Claude ✅
+[x] Implement Vagon Playwright scraper (26 events ✅)
+[x] Test full automated run: 5/26 venues without Claude ✅
+[x] Implement Jazz Dock Playwright scraper (20 events ✅)
+[x] Test full automated run: 6/26 venues without Claude ✅
 
-### Phase 4: Unit Testing
-[ ] Create test_scraper.py
-[ ] Test weekend coverage for large venues (min 2 events on Fri/Sat)
-[ ] Test URL validity (all URLs start with https://)
-[ ] Test date/time format validation
-[ ] Test retry/error logging
+**Current Status - 6/26 FULLY AUTOMATED (23% complete):**
+- ✅ **Palác Akropolis** (29 events) - Beautiful Soup - **AUTOMATED**
+- ✅ **Rock Café** (23 events) - Playwright - **AUTOMATED**
+- ✅ **Lucerna Music Bar** (31 events) - Playwright - **AUTOMATED**
+- ✅ **Roxy** (25 events) - Playwright - **AUTOMATED**
+- ✅ **Vagon** (26 events) - Playwright - **AUTOMATED**
+- ✅ **Jazz Dock** (20 events) - Playwright - **AUTOMATED**
 
-### Phase 5: HTML Generation
+**Total: 154 events from 6 venues**
+
+**Next Steps (Batch 1 - deferred):**
+[ ] Implement Cross Club Playwright scraper (DEFERRED - complex JavaScript calendar)
+
+---
+
+### Phase 4: Complete All 26 Venues (GRADUAL IMPLEMENTATION) ⚠️ CRITICAL
+
+**Target:** 200+ events from all 26 venues, fully automated
+
+**Implementation Order (stepwise, one-by-one):**
+
+**Batch 1: High-value venues (next 5)**
+[ ] Lucerna Music Bar (20-30 expected) - Playwright
+[ ] Roxy (15-30 expected) - Playwright
+[ ] Vagon (10-25 expected) - Playwright
+[ ] Cross Club (8-20 expected) - Playwright
+[ ] Jazz Dock (8-20 expected) - Playwright
+
+**Batch 2: Medium venues**
+[ ] Forum Karlín (5-15 expected) - Playwright
+[ ] Lucerna Velký sál (8-20 expected) - Playwright
+[ ] MeetFactory (3-12 expected) - Playwright
+[ ] Malostranská beseda (5-15 expected) - Playwright
+
+**Batch 3: Small/specialized venues**
+[ ] U Staré Paní Jazz & Cocktail Club (5-15 expected)
+[ ] Reduta Jazz Club (5-20 expected) - Playwright
+[ ] Watt Music Club (3-10 expected) - Playwright
+[ ] Divadlo Pod lampou (0-5 expected) - Playwright
+[ ] Kulturní dům Šeříkovka (1-8 expected) - Playwright
+[ ] Kulturní dům JAS (1-8 expected) - Playwright
+
+**Batch 4: Large arenas (sporadic events)**
+[ ] O2 Arena (4-15 expected) - music only, no sports - Playwright
+[ ] O2 Universum (3-10 expected) - Playwright
+[ ] Sportovní hala Fortuna (2-8 expected) - music only - Playwright
+
+**Batch 5: Plzeň venues**
+[ ] Buena Vista Club (3-10 expected) - Playwright
+[ ] Dům hudby Plzeň (2-10 expected) - Playwright
+[ ] Moving Station (2-10 expected) - Playwright
+[ ] Papírna Plzeň (1-8 expected) - Playwright
+[ ] Měšťanská beseda (3-12 expected) - Playwright
+[ ] LOGSPEED CZ Aréna (0-5 expected) - music only - Playwright
+
+---
+
+### Phase 5: HTML Generation (After All Venues Complete)
 [ ] Create generate_html.py
 [ ] Read events_data.json
 [ ] Generate complete HTML (no context limits)
@@ -58,14 +130,34 @@ Plzeň: Buena Vista Club, Divadlo Pod lampou, Kulturní dům Šeříkovka, Kultu
 [ ] Add search functionality
 [ ] Add responsive design with gradient background
 
-### Phase 6: Documentation & Commit
-[ ] Update README.md with usage instructions
-[ ] Document parser patterns in .claude/docs/parser-patterns.md
-[ ] Test full workflow end-to-end (scrape → validate → HTML)
-[ ] Run `/doc` workflow to update experiment_log.md and rules-learned.md
-[ ] Commit: "feat: implement python scraper with beautiful soup"
+---
 
+### Phase 6: Testing & Validation (After All Venues Complete)
+[ ] Create test_scraper.py
+[ ] Test weekend coverage for large venues (min 2 events on Fri/Sat)
+[ ] Test URL validity (all URLs start with https://)
+[ ] Test date/time format validation
+[ ] Test retry/error logging
+[ ] Test full workflow end-to-end (scrape → validate → HTML)
+
+---
+
+### Phase 7: Documentation & Deployment
+[ ] Update README.md with usage instructions
+[ ] Document automation setup (cron job, scheduler)
+[ ] Document parser patterns in .claude/docs/parser-patterns.md
+[ ] Run `/doc` workflow to update experiment_log.md and rules-learned.md
+[ ] Final commit: "feat: complete automated concert scraper for 26 venues"
+
+---
 
 ## Done
-<!-[ ]Claude moves completed items here with commit hash + date -->
-[x] 001: 
+
+### Completed Phases
+[x] Phase 1: Proof of Concept (Palác Akropolis)
+[x] Phase 2: Framework & Configuration
+[x] Phase 3 (Partial): Rock Café automation with Playwright
+
+### Completed Venues (2/26 - 8% complete)
+[x] Palác Akropolis - Beautiful Soup (29 events)
+[x] Rock Café - Playwright (23 events) 
