@@ -196,3 +196,139 @@ Every time data is incomplete:
 **Never let the same failure happen twice.**
 
 ---
+
+## Python Scraping
+
+### Rule: Use Beautiful Soup for static HTML, not just WebFetch
+**Why:** Many venue websites have events in static HTML (in <td> elements, divs, etc.). Beautiful Soup can parse these efficiently without Claude Code's context limits.
+
+**When to use:**
+- Events are in the page HTML (not loaded by JavaScript AFTER page load)
+- Need to scrape 100+ events (WebFetch hits context limits)
+- Want full control over parsing logic
+
+**Enforcement:**
+- Phase 1: Test with proof-of-concept venue (Palac Akropolis)
+- Validate results match or exceed WebFetch results
+- Check for Nov 27-28 specifically (historically problematic dates)
+
+**Example:**
+```python
+from bs4 import BeautifulSoup
+import requests
+
+html = requests.get(url).text
+soup = BeautifulSoup(html, 'lxml')
+all_tds = soup.find_all('td')
+
+for td in all_tds:
+    # Find date pattern and event_id link
+    if date_match and event_link:
+        events.append(parse_event(td))
+```
+
+---
+
+### Rule: Implement HTTP caching for development
+**Why:** During development, you'll re-run scrapers many times. Caching prevents hammering venue servers and speeds up development.
+
+**Enforcement:**
+```python
+import requests_cache
+requests_cache.install_cache('scraper_cache', expire_after=3600)
+```
+
+**Settings:**
+- Expire after: 1 hour (3600 seconds) for development
+- Cache file: Add to .gitignore
+- Disable for production runs
+
+---
+
+### Rule: Parse events from <td> elements, not just <a> links
+**Why:** Many venues (like Palac Akropolis) structure events in table cells with complex nested HTML. Links alone don't contain artist names or dates.
+
+**Pattern discovered:**
+```html
+<td>
+  <a href="/work/33298?event_id=39277"></a>
+  01. 11  <!-- Date -->
+  ARTIST NAME  <!-- Artist text -->
+</td>
+```
+
+**Enforcement:**
+- Search for all <td> tags
+- Match date pattern with regex: r'(\d{1,2})\.\s*(\d{1,2})'
+- Find associated event_id link within same <td>
+- Extract artist text after date
+
+---
+
+### Rule: Validate Nov 27-28 specifically in unit tests
+**Why:** These dates were historically problematic (missed in initial scrapes). Explicit test prevents regression.
+
+**Enforcement:**
+```python
+def test_november_27_28_coverage(events):
+    has_27 = any(e['day'] == 27 for e in events)
+    has_28 = any(e['day'] == 28 for e in events)
+    assert has_27, "Missing Nov 27 events"
+    assert has_28, "Missing Nov 28 events"
+```
+
+---
+
+### Rule: Store month/year in config, not command-line arguments
+**Why:** User requested: "Chci parametr, pro ktery mesic a rok se data stahuji, ulozit do config souboru"
+
+**Enforcement:**
+- Read from kluby.json: config.mesic_cislo, config.rok
+- No argparse or sys.argv for month/year
+- Command-line args only for optional flags (--debug, --no-cache)
+
+**Example:**
+```python
+config = json.load(open('kluby.json'))
+month = config['config']['mesic_cislo']  # 11
+year = config['config']['rok']           # 2025
+```
+
+---
+
+### Rule: Implement per-club parser architecture
+**Why:** Each venue has different HTML structure. Generic parser will fail or miss events.
+
+**Enforcement:**
+- Phase 1: One parser per club (scraper_akropolis.py, scraper_roxy.py, etc.)
+- Each parser inherits from base class with common methods
+- Main framework calls appropriate parser based on venue name
+
+**Structure:**
+```python
+class BaseScraper:
+    def fetch_html(self): ...
+    def validate(self): ...
+    def save_json(self): ...
+
+class AkropolisScraper(BaseScraper):
+    def parse_event_from_td(self, td): ...
+    def scrape(self): ...
+
+class RoxyScraper(BaseScraper):
+    def parse_event_from_div(self, div): ...
+    def scrape(self): ...
+```
+
+---
+
+## Future Python Improvements
+
+### Planned enhancements for Phase 2-6:
+1. **Retry logic:** If scraper fails, attempt other clubs first, retry once, log failure
+2. **Unit tests:** Weekend coverage, URL validity, date range, Nov 27-28 specific
+3. **HTML generation:** Read events_data.json, generate full HTML with no context limits
+4. **Logging:** Use Python logging module instead of print statements
+5. **Type safety:** Add mypy checks for type hints
+
+---
