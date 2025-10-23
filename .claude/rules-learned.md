@@ -7,16 +7,16 @@
 ## Web Scraping & Data Collection
 
 ### Rule: Always validate weekend day coverage for large venues
-**Why:** Large clubs (Palác Akropolis, Rock Café, Roxy) typically have events on Fridays and Saturdays. Missing weekend days indicates incomplete data.
+**Why:** Large clubs (Palï¿½c Akropolis, Rock Cafï¿½, Roxy) typically have events on Fridays and Saturdays. Missing weekend days indicates incomplete data.
 
 **Enforcement:**
-- Check: If large venue (min_akci >= 15) has < 2 weekend events in month ’ flag for re-fetch
+- Check: If large venue (min_akci >= 15) has < 2 weekend events in month ï¿½ flag for re-fetch
 - Validation: LEVEL 3 anomaly detection in workflow
 
 **Example:**
 ```javascript
 if (venue.velikost === "velky" && weekendEvents < 2) {
-  console.warn(`  ${venue.nazev}: Only ${weekendEvents} weekend events - possible incomplete data`);
+  console.warn(`ï¿½ ${venue.nazev}: Only ${weekendEvents} weekend events - possible incomplete data`);
   needsRefetch.push(venue);
 }
 ```
@@ -50,11 +50,11 @@ Extract concerts for November 2025.
 
 **Enforcement:**
 - LEVEL 1: Parallel WebFetch for all clubs
-- LEVEL 2: Global analysis (date×club matrix)
+- LEVEL 2: Global analysis (dateï¿½club matrix)
 - LEVEL 3: Detect anomalies (min thresholds, weekend gaps, date gaps)
 - LEVEL 4: Targeted re-fetch for flagged clubs
 - LEVEL 5: Cross-validate with WebSearch
-- LEVEL 6: Generate validation report ’ get user confirmation
+- LEVEL 6: Generate validation report ï¿½ get user confirmation
 
 **Never skip:** User must confirm validation report before HTML generation.
 
@@ -98,8 +98,8 @@ if (actualEvents < venue.min_akci) {
 
 **Example:**
 ```
-WebFetch: Jazz Dock ’ 6 events (only 1-4 Nov)
-WebSearch: "Jazz Dock Praha program listopad 2025" ’ mentions events on 16, 21, 24, 28 Nov
+WebFetch: Jazz Dock ï¿½ 6 events (only 1-4 Nov)
+WebSearch: "Jazz Dock Praha program listopad 2025" ï¿½ mentions events on 16, 21, 24, 28 Nov
 Action: Flag for manual review or alternative URL fetch
 ```
 
@@ -125,7 +125,7 @@ Action: Flag for manual review or alternative URL fetch
 for (let day = 1; day <= 30; day++) {
   const eventsOnDay = allEvents.filter(e => e.day === day).length;
   if (eventsOnDay === 0) {
-    console.error(`=¨ Day ${day}: ZERO events - data incomplete`);
+    console.error(`=ï¿½ Day ${day}: ZERO events - data incomplete`);
   }
 }
 ```
@@ -143,11 +143,11 @@ for (let day = 1; day <= 30; day++) {
 **Monthly update:**
 ```json
 "config": {
-  "mesic": "prosinec",      //  Change this
-  "mesic_en": "December",   //  Change this
-  "rok": 2025,              //  Keep same (or update)
-  "mesic_cislo": 12,        //  Change this
-  "pocet_dni": 31           //  Update days in month
+  "mesic": "prosinec",      // ï¿½ Change this
+  "mesic_en": "December",   // ï¿½ Change this
+  "rok": 2025,              // ï¿½ Keep same (or update)
+  "mesic_cislo": 12,        // ï¿½ Change this
+  "pocet_dni": 31           // ï¿½ Update days in month
 }
 ```
 
@@ -158,9 +158,9 @@ for (let day = 1; day <= 30; day++) {
 
 **Report must include:**
 -  GREEN clubs: Complete data
--   YELLOW clubs: Possible gaps
-- =¨ RED clubs: Fetch failures
-- =Ê Global statistics: total events, day coverage
+- ï¿½ YELLOW clubs: Possible gaps
+- =ï¿½ RED clubs: Fetch failures
+- =ï¿½ Global statistics: total events, day coverage
 - S Questions for user: "Manual check needed for X?"
 
 **Communication pattern:**
@@ -319,6 +319,29 @@ class RoxyScraper(BaseScraper):
     def parse_event_from_div(self, div): ...
     def scrape(self): ...
 ```
+
+---
+
+## Prioritization & Time Management
+
+### Rule: Defer complex venues, maximize simple venue coverage first
+**Why:** One complex venue requiring hours of debugging provides less value than implementing 5+ simple venues in the same time.
+
+**Decision criteria:**
+- If a venue requires >3 debug attempts without success â†’ defer it
+- Continue with simpler venues to maximize coverage percentage
+- Return to complex cases after implementing majority of venues
+
+**Example - Cross Club:**
+- **Problem:** Complex JavaScript calendar, events load via AJAX
+- **Attempts:** 5 debug scripts, no events extracted
+- **Decision:** Defer (1 venue, 8-20 events) â†’ implement simpler venues instead
+- **Result:** Better ROI - can implement 5+ venues in same time
+
+**Enforcement:**
+- Mark deferred venues clearly in plan.md with reason
+- Revisit after reaching 70%+ coverage of simpler venues
+- Consider manual data collection as fallback for very complex sites
 
 ---
 

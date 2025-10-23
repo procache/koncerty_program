@@ -35,33 +35,38 @@
 
 ## Collection Method
 
-**Workflow:** See `kluby.json` for configuration
+**Automated Scraping Strategy:** See `scrape_concerts.py` and `browser_scraper.py`
 
-1. **WebFetch** all club URLs with month-specific prompts
-2. **Validation** against expected ranges (min_akci, max_akci)
-3. **Re-fetch** for anomalies (missing weekends, low counts)
-4. **Cross-validate** with WebSearch for suspicious results
-5. **Report** validation summary to user
-6. **Generate** HTML only after user confirms
+1. **Playwright** for JavaScript-heavy sites (fully automated) → see browser_scraper.py
+2. **Beautiful Soup** for static HTML sites (fully automated) → see scraper_akropolis.py
+3. **Validation** against expected ranges (min_akci, max_akci in kluby.json)
+4. **Retry** failed venues once
+5. **Report** validation summary (GREEN/YELLOW/RED status)
+
+**⚠️ WebFetch Deprecated:** WebFetch requires Claude interaction = NOT AUTOMATED. Only kept for debugging.
 
 ---
 
-## Data Quality Metrics (listopad 2025)
+## Data Quality Metrics (listopad 2025) - Automated Run
 
-- **Total events**: 215+
-- **Clubs with data**: 16/26 (62%)
-- **Days covered**: 30/30 (100%)
-- **Weekend coverage**: 100%
-- **Validation level**: LEVEL 1-6 complete
+- **Total events**: 154 (from 6/26 venues)
+- **Venues automated**: 6/26 (23%)
+  - Palác Akropolis: 29 events (Beautiful Soup)
+  - Rock Café: 23 events (Playwright)
+  - Lucerna Music Bar: 31 events (Playwright)
+  - Roxy: 25 events (Playwright)
+  - Vagon: 26 events (Playwright)
+  - Jazz Dock: 20 events (Playwright)
+- **All venues**: GREEN status ✅
+- **Automation goal**: 26/26 venues without Claude interaction
 
 ---
 
 ## Known Limitations
 
-- **Jazz Dock**: Only first 4 days loaded (pagination not accessible)
-- **Cross Club**: Only Nov 1 loaded (pagination not accessible)
-- **Small cultural centers**: Many don't publish online programs
-- **Dynamic content**: JavaScript-loaded events may be missed
+- **Cross Club**: Deferred - complex JavaScript calendar requires advanced Playwright (click dates, wait AJAX)
+- **Remaining 20 venues**: Not yet implemented (gradual rollout per plan.md)
+- **No runtime errors**: System gracefully skips unimplemented scrapers
 
 ---
 

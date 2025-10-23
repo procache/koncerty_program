@@ -4,17 +4,17 @@
 
 ---
 
-## Issue: Pal·c Akropolis missing events (27-28 November)
+## Issue: PalÔøΩc Akropolis missing events (27-28 November)
 **Date:** 2025-10-23
 
-- **Context:** Initial WebFetch of Pal·c Akropolis returned 22 events but skipped November 27-28 (weekend days)
+- **Context:** Initial WebFetch of PalÔøΩc Akropolis returned 22 events but skipped November 27-28 (weekend days)
 - **Failure Type:** Data completeness issue - pagination/truncation in WebFetch results
 
-### =Œ Proof
+### =ÔøΩ Proof
 - First fetch: 22 events, missing dates 27, 28 (Friday, Saturday - high-probability days)
 - Second fetch with explicit instructions: returned complete 27 events including 27-28 Nov
 
-### =œ Rule Added
+### =ÔøΩ Rule Added
 - `.claude/docs/rules-learned.md`: Always validate weekend day coverage for large venues
 - Enforcement: Multi-level validation system with anomaly detection
 
@@ -31,11 +31,11 @@
 - **Context:** WebFetch only returned first page of events, didn't load pagination
 - **Failure Type:** Dynamic content loading - JavaScript pagination not accessible to WebFetch
 
-### =Œ Proof
+### =ÔøΩ Proof
 - Jazz Dock: Only 6 events (1-4 Nov) returned, expected 8-20
 - Cross Club: Only 1 event returned, expected 8-20
 
-### =œ Rule Added
+### =ÔøΩ Rule Added
 - `.claude/docs/rules-learned.md`: For clubs with < expected minimum, use WebSearch cross-validation
 - Enforcement: Validation report flags clubs below min_akci threshold
 
@@ -51,7 +51,7 @@
 - **Context:** First version generated HTML directly without validation, missed missing events
 - **Failure Type:** Process gap - no quality assurance before HTML generation
 
-### =œ Rule Added
+### =ÔøΩ Rule Added
 - `.claude/docs/rules-learned.md`: Always run multi-level validation before HTML generation
 - Enforcement: 6-level validation workflow documented in kluby.json approach
 
@@ -66,12 +66,12 @@
 **Date:** 2025-10-23
 
 - **Context:** Second iteration used structured configuration + validation
-- **Result:** 215+ events from 16 clubs, all 30 days covered, Pal·c Akropolis complete
+- **Result:** 215+ events from 16 clubs, all 30 days covered, PalÔøΩc Akropolis complete
 
 ### Key Improvements
 1. Configuration file (kluby.json) with expected ranges per club
 2. Parallel WebFetch for all clubs
-3. Global date◊club matrix analysis
+3. Global dateÔøΩclub matrix analysis
 4. Anomaly detection (missing weekends, gaps, low counts)
 5. Targeted re-fetch for problematic clubs
 6. Cross-validation with WebSearch
@@ -82,7 +82,7 @@
 - Total events: 215+
 - Days covered: 30/30 (100%)
 - Weekend coverage: 100%
-- Pal·c Akropolis: 27 events including 27-28 Nov 
+- PalÔøΩc Akropolis: 27 events including 27-28 Nov 
 
 ---
 
@@ -174,5 +174,98 @@
 - Phase 2: Expand framework with retry logic
 - Phase 3: Create parsers for top 5 clubs
 - Phase 4: Implement comprehensive unit tests
+
+---
+
+## Success: Implemented Vagon and Jazz Dock Playwright Scrapers
+**Date:** 2025-10-23
+
+- **Context:** Continued automation expansion - Batch 1 venues from plan.md
+- **Result:** 6/26 venues (23%) now fully automated, 154 total events
+
+### Vagon Implementation
+- **HTML Structure:** `<table class="table">` with columns [price, day_name, day_number, program, note]
+- **Parsing Strategy:** Extract day from 3rd column (tds[2]), artist names from links in program column (tds[3])
+- **Artist Names:** Multiple artists joined with " + " separator
+- **Default Time:** 21:00 (as stated on website), extracted if found in program text
+- **Result:** 26 events for November 2025, GREEN status
+
+```python
+# Example event:
+{
+  "date": "01.11.2025",
+  "time": "20:00",
+  "artist": "STAV BEZT√ç≈ΩE + CURLIES + FIASKO",
+  "url": "https://www.facebook.com/stavbeztizeband"
+}
+```
+
+### Jazz Dock Implementation
+- **URL Structure:** Month-based navigation `/en/program/2025/11`
+- **HTML Structure:** `<div class="program-item">` elements
+- **Date Format:** "Sa 01. 11. from 15:00" (day_abbrev DD. MM. from HH:MM)
+- **Artist Extraction:** Text split by `|` separator, handle labels like "Jazz Dock to Kids", "Concerts package"
+- **Result:** 20 events for November 2025, GREEN status (within 8-20 expected range)
+
+```python
+# Example event:
+{
+  "date": "01.11.2025",
+  "time": "20:00",
+  "artist": "Keyon Harrold",
+  "url": "https://www.jazzdock.cz/en/koncert/keyon-harrold-1-1"
+}
+```
+
+### Automated Status Update
+- **Venues automated:** 6/26 (23%)
+  1. Pal√°c Akropolis: 29 events (Beautiful Soup)
+  2. Rock Caf√©: 23 events (Playwright)
+  3. Lucerna Music Bar: 31 events (Playwright)
+  4. Roxy: 25 events (Playwright)
+  5. Vagon: 26 events (Playwright) ‚Üê NEW
+  6. Jazz Dock: 20 events (Playwright) ‚Üê NEW
+- **Total events:** 154
+- **All venues:** GREEN status ‚úÖ
+
+---
+
+## Decision: Defer Cross Club Implementation
+**Date:** 2025-10-23
+
+- **Context:** Cross Club uses complex JavaScript calendar that dynamically loads events
+- **Decision Type:** Strategic prioritization - defer to focus on simpler venues first
+
+### Problem Analysis
+- **HTML Structure:** Events loaded via AJAX when clicking calendar dates
+- **Playwright Challenges:**
+  - Calendar shows 20 November dates highlighted
+  - Clicking individual dates doesn't populate event data in DOM
+  - Events may be loaded in iframe or via complex JavaScript
+  - Requires advanced Playwright (clicking, waiting for AJAX, possibly iframe handling)
+
+### Debugging Attempts (5 scripts)
+1. `debug_crossclub.py` - Initial HTML structure analysis
+2. `debug_crossclub2.py` - November navigation test
+3. `debug_crossclub3.py` - Specific date (Nov 2) check
+4. `debug_crossclub4.py` - Visible browser test with screenshots
+5. `debug_crossclub5.py` - Calendar date iteration
+
+**Result:** No events extracted despite calendar showing 20 dates
+
+### Decision Rationale
+- **Time Investment:** Complex debugging could take hours
+- **ROI:** Cross Club = 1 venue, 8-20 expected events
+- **Better Strategy:** Implement 5+ simpler venues in same time
+- **Coverage:** Maximize venue count before tackling complex cases
+
+### Implementation Strategy
+- **Deferred:** Cross Club marked as "complex JavaScript calendar" in plan.md
+- **Prioritization:** Continue with Batch 2-5 venues (simpler structures)
+- **Revisit:** Return to Cross Club after implementing most other venues
+- **Fallback:** Can manually collect Cross Club data if automation proves too difficult
+
+### Lesson Learned
+‚úÖ **Rule:** When a venue requires significantly more debugging than others, defer it and maximize coverage with simpler venues first. One complex venue isn't worth blocking progress on 5+ simple ones.
 
 ---
