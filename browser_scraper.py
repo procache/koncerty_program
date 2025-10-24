@@ -1319,5 +1319,232 @@ class WattMusicClubBrowserScraper(BrowserScraper):
         return self.events
 
 
+class O2ArenaBrowserScraper(BrowserScraper):
+    """
+    O2 Arena scraper using Playwright
+    URL: https://www.o2arena.cz/en/events/
+    Filters out sports events (hockey, FMX, etc.), keeps only music concerts
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://www.o2arena.cz/en/events/",
+            venue_name="O2 Arena",
+            city="Praha",
+            month=month,
+            year=year
+        )
+        # Sports keywords to filter out
+        self.sports_keywords = [
+            'HC Sparta', 'Bílí Tygři', 'hockey', 'FMX', 'Global Champions',
+            'Equestrian', 'football', 'basketball', 'volleyball', 'Sparta Praha',
+            'Tipsport', 'extraliga', 'playoffs', 'Liberec', 'Litvínov',
+            'Mladá Boleslav', 'hokey', 'hokej'
+        ]
+
+    def scrape(self) -> List[Dict]:
+        """Main scraping method using Playwright"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+
+        # Fetch HTML with browser
+        html = self.fetch_html_with_browser(wait_for_selector='div.event_preview')
+
+        # Parse HTML
+        return self.parse_html(html)
+
+    def is_sports_event(self, event_name: str) -> bool:
+        """Check if event is a sports event based on keywords"""
+        event_lower = event_name.lower()
+        return any(keyword.lower() in event_lower for keyword in self.sports_keywords)
+
+    def parse_html(self, html: str) -> List[Dict]:
+        """Parse O2 Arena events page and extract music concerts only"""
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find all event preview divs
+        event_divs = soup.find_all('div', class_='event_preview')
+        self.logger.info(f"Found {len(event_divs)} event divs on page")
+
+        events = []
+        sports_filtered = 0
+
+        for event_div in event_divs:
+            try:
+                # Extract time
+                time_p = event_div.find('p', class_='time')
+                if not time_p:
+                    continue
+
+                time_text = time_p.text.strip()
+
+                # Parse date DD.MM.YYYY HH:MM
+                date_match = re.search(r'(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}:\d{2})', time_text)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+                month_num = int(date_match.group(2))
+                year_num = int(date_match.group(3))
+                time_str = date_match.group(4)
+
+                # Only include events for the requested month and year
+                if month_num != self.month or year_num != self.year:
+                    continue
+
+                # Extract event name and URL
+                h3 = event_div.find('h3')
+                if not h3:
+                    continue
+
+                link = h3.find('a')
+                if not link:
+                    continue
+
+                artist = link.text.strip()
+                url = link.get('href', '')
+
+                # Filter out sports events
+                if self.is_sports_event(artist):
+                    self.logger.debug(f"Filtering out sports event: {artist}")
+                    sports_filtered += 1
+                    continue
+
+                # Create event
+                event = {
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url if url.startswith('http') else f"https://www.o2arena.cz{url}",
+                    # Legacy fields for backwards compatibility
+                    'den': day,
+                    'den_tydne': None,
+                    'cas': time_str,
+                    'umelec': artist,
+                    'misto': self.venue_name,
+                    'status': None
+                }
+
+                events.append(event)
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        # Sort by day
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} music events for {self.month:02d}/{self.year} (filtered out {sports_filtered} sports events)")
+        return self.events
+
+
+class O2UniversumBrowserScraper(BrowserScraper):
+    """
+    O2 Universum scraper using Playwright
+    URL: https://www.o2universum.cz/en/events/
+    No sports filtering needed (music venue only)
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://www.o2universum.cz/en/events/",
+            venue_name="O2 Universum",
+            city="Praha",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Main scraping method using Playwright"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+
+        # Fetch HTML with browser
+        html = self.fetch_html_with_browser(wait_for_selector='div.event_preview')
+
+        # Parse HTML
+        return self.parse_html(html)
+
+    def parse_html(self, html: str) -> List[Dict]:
+        """Parse O2 Universum events page"""
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find all event preview divs
+        event_divs = soup.find_all('div', class_='event_preview')
+        self.logger.info(f"Found {len(event_divs)} event divs on page")
+
+        events = []
+
+        for event_div in event_divs:
+            try:
+                # Extract time
+                time_p = event_div.find('p', class_='time')
+                if not time_p:
+                    continue
+
+                time_text = time_p.text.strip()
+
+                # Parse date DD.MM.YYYY HH:MM
+                date_match = re.search(r'(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}:\d{2})', time_text)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+                month_num = int(date_match.group(2))
+                year_num = int(date_match.group(3))
+                time_str = date_match.group(4)
+
+                # Only include events for the requested month and year
+                if month_num != self.month or year_num != self.year:
+                    continue
+
+                # Extract event name and URL
+                h3 = event_div.find('h3')
+                if not h3:
+                    continue
+
+                link = h3.find('a')
+                if not link:
+                    continue
+
+                artist = link.text.strip()
+                url = link.get('href', '')
+
+                # Create event
+                event = {
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url if url.startswith('http') else f"https://www.o2universum.cz{url}",
+                    # Legacy fields for backwards compatibility
+                    'den': day,
+                    'den_tydne': None,
+                    'cas': time_str,
+                    'umelec': artist,
+                    'misto': self.venue_name,
+                    'status': None
+                }
+
+                events.append(event)
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        # Sort by day
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} events for {self.month:02d}/{self.year}")
+        return self.events
+
+
 if __name__ == '__main__':
     main()
