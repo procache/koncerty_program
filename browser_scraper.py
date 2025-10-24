@@ -1546,5 +1546,117 @@ class O2UniversumBrowserScraper(BrowserScraper):
         return self.events
 
 
+class DivadloPodLampouBrowserScraper(BrowserScraper):
+    """
+    Divadlo Pod lampou scraper using Playwright
+    URL: https://podlampou.cz/events/
+    Note: Primarily theatre venue, filters music events only
+    """
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://podlampou.cz/events/",
+            venue_name="Divadlo Pod lampou",
+            city="Plzeň",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Main scraping method using Playwright"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+
+        # Fetch HTML with browser
+        html = self.fetch_html_with_browser(wait_for_selector='a.list-item')
+
+        # Parse HTML
+        return self.parse_events(html)
+
+    def parse_events(self, html: str) -> list:
+        """
+        Parse events from Divadlo Pod lampou HTML
+        Structure: <a class="list-item"> with <span class="date">
+        """
+        from bs4 import BeautifulSoup
+        import re
+        from datetime import datetime
+
+        soup = BeautifulSoup(html, 'lxml')
+        events = []
+
+        # Find all event items
+        event_items = soup.find_all('a', class_='list-item')
+        self.logger.info(f"Found {len(event_items)} total event items")
+
+        for item in event_items:
+            try:
+                # Get date span
+                date_span = item.find('span', class_='date')
+                if not date_span:
+                    continue
+
+                date_text = date_span.get_text(strip=True)
+                # Example: "So 1. 11. 20:00" (day_name day. month. time)
+
+                # Parse date using regex
+                date_match = re.search(r'(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{1,2}:\d{2})', date_text)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+                month = int(date_match.group(2))
+                time = date_match.group(3)
+
+                # Filter for our target month
+                if month != self.month:
+                    continue
+
+                # Get artist name
+                h2 = item.find('h2')
+                if not h2:
+                    continue
+
+                artist = h2.get_text(strip=True)
+
+                # Get URL
+                url = item.get('href', '')
+                if not url.startswith('http'):
+                    url = f"https://podlampou.cz{url}"
+
+                # Filter for music events (exclude theatre, readings, workshops)
+                # Look for music-related keywords or lack of theatre keywords
+                artist_lower = artist.lower()
+                theatre_keywords = ['divadlo', 'theatre', 'workshop', 'seminář', 'čtení', 'beseda', 'vernisáž']
+
+                # Skip if it's clearly theatre/non-music
+                if any(kw in artist_lower for kw in theatre_keywords):
+                    self.logger.debug(f"Skipping theatre event: {artist}")
+                    continue
+
+                # Add event
+                event = {
+                    'date': f"{day:02d}.{month:02d}.{self.year}",
+                    'day': day,
+                    'month': month,
+                    'year': self.year,
+                    'time': time,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url
+                }
+                events.append(event)
+                self.logger.debug(f"Added event: {artist} on {day}.{month}. at {time}")
+
+            except Exception as e:
+                self.logger.error(f"Error parsing event item: {e}")
+                continue
+
+        # Sort by day
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} music events for {self.month:02d}/{self.year}")
+        return self.events
+
+
 if __name__ == '__main__':
     main()

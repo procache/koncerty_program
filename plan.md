@@ -17,13 +17,12 @@
 **Current Month:** November 2025
 
 **📅 Session Status (2025-10-24):**
-- ✅ Completed today: Watt Music Club, O2 Arena (filters sports), O2 Universum, TDD tests, **Major data correction**
+- ✅ Completed today: Watt Music Club, O2 Arena (filters sports), O2 Universum, Divadlo Pod lampou (filters theatre), TDD tests, **Major data correction**
 - 🔍 Major discovery: 3 venues mislabeled as Praha are actually in Plzeň (Divadlo Pod lampou, KD Šeříkovka, KD JAS)
 - ⏸️ Deferred (4): U Staré Paní (website down), Lucerna Velký sál (no events), Cross Club (complex JS), Sportovní hala Fortuna (complex carousel)
-- 📊 Progress: **13/26 venues (50%)**, 251 events
-- 🎯 Remaining: **13 venues** (all in Plzeň or deferred Praha venues)
-- 💾 Git: Ready to commit data corrections
-- 🔄 Next priorities: Plzeň venues (9 venues including 3 corrected ones)
+- 📊 Progress: **14/26 venues (54%)**, 265 events
+- 🎯 Remaining: **12 venues** (8 in Plzeň + 4 deferred Praha venues)
+- 🔄 Next priorities: Continue with Plzeň venues (8 remaining)
 
 ---
 
@@ -86,8 +85,10 @@
 [x] Implement O2 Arena Playwright scraper (filters sports, 7 events ✅)
 [x] Implement O2 Universum Playwright scraper (8 events ✅)
 [x] Test full automated run: 13/26 venues without Claude ✅
+[x] Implement Divadlo Pod lampou Playwright scraper (filters theatre, 15 events ✅)
+[x] Test full automated run: 14/26 venues without Claude ✅
 
-**Current Status - 13/26 FULLY AUTOMATED (50% complete):**
+**Current Status - 14/26 FULLY AUTOMATED (54% complete):**
 - ✅ **O2 Arena** (7 events) - Playwright + Sports Filter - **AUTOMATED**
 - ✅ **O2 Universum** (8 events) - Playwright - **AUTOMATED**
 - ✅ **Palác Akropolis** (29 events) - Beautiful Soup - **AUTOMATED**
@@ -101,8 +102,9 @@
 - ✅ **Malostranská beseda** (28 events) - Playwright - **AUTOMATED**
 - ✅ **Reduta Jazz Club** (30 events) - Playwright - **AUTOMATED**
 - ✅ **Watt Music Club** (3 events) - Playwright (GoOut) - **AUTOMATED**
+- ✅ **Divadlo Pod lampou** (15 events) - Playwright + Theatre Filter - **AUTOMATED**
 
-**Total: 251 events from 13 venues**
+**Total: 265 events from 14 venues**
 
 ---
 
@@ -110,26 +112,26 @@
 
 **Target:** 300+ events from all 26 venues, fully automated
 
-**Progress: 13/26 venues implemented (50%)**
+**Progress: 14/26 venues implemented (54%)**
 
 **Status Overview:**
 ```
-✅ Implemented (13):  O2 Arena, O2 Universum, Palác Akropolis, Rock Café,
+✅ Implemented (14):  O2 Arena, O2 Universum, Palác Akropolis, Rock Café,
                       Lucerna Music Bar, Roxy, Vagon, Jazz Dock, Forum Karlín,
                       MeetFactory, Malostranská beseda, Reduta Jazz Club,
-                      Watt Music Club
+                      Watt Music Club, Divadlo Pod lampou
 
 ⏸️ Deferred (4):     Cross Club, Lucerna Velký sál, U Staré Paní,
                      Sportovní hala Fortuna
 
-❌ Not Started (9):  Divadlo Pod lampou*, KD Šeříkovka*, KD JAS*,
-                     Buena Vista Club, Dům hudby Plzeň, Moving Station,
-                     Papírna Plzeň, Měšťanská beseda, LOGSPEED CZ Aréna
+❌ Not Started (8):  KD Šeříkovka*, KD JAS*, Buena Vista Club, Dům hudby Plzeň,
+                     Moving Station, Papírna Plzeň, Měšťanská beseda,
+                     LOGSPEED CZ Aréna
 
                      * Previously mislabeled as Praha, actually in Plzeň
 ```
 
-**Remaining venues to implement (13):**
+**Remaining venues to implement (12):**
 
 **Priority 1: Large Prague venues (high event count)**
 [x] O2 Arena (4-15 expected) - music only, filter out sports - Playwright ✅ 7 events
@@ -149,7 +151,7 @@ _Note: This category is now empty - all venues were incorrectly listed as Praha,
 
 **Priority 4: Plzeň venues (now includes formerly mislabeled Praha venues)**
 [x] Watt Music Club (3-10 expected) - Playwright via GoOut ✅ 3 events (ALREADY IMPLEMENTED)
-[ ] Divadlo Pod lampou (0-5 expected) - primarily theatre, occasional music - Playwright (was mislabeled as Praha)
+[x] Divadlo Pod lampou (0-5 expected) - primarily theatre, filters music - Playwright ✅ 15 events (was mislabeled as Praha)
 [ ] Kulturní dům Šeříkovka (1-8 expected) - Playwright (was mislabeled as Praha)
 [ ] Kulturní dům JAS (1-8 expected) - Playwright via GoOut (was mislabeled as Praha)
 [ ] Buena Vista Club (3-10 expected) - Playwright
@@ -213,7 +215,8 @@ _Note: This category is now empty - all venues were incorrectly listed as Praha,
 [x] Malostranská beseda - Playwright (28 events)
 [x] Reduta Jazz Club - Playwright (30 events)
 
-**Plzeň venues (1):**
+**Plzeň venues (2):**
 [x] Watt Music Club - Playwright via GoOut (3 events)
+[x] Divadlo Pod lampou - Playwright + Theatre Filter (15 events)
 
-**Total: 251 events from 13 fully automated venues** 
+**Total: 265 events from 14 fully automated venues** 
