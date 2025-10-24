@@ -17,12 +17,12 @@
 **Current Month:** November 2025
 
 **📅 Session Status (2025-10-24):**
-- ✅ Completed today: Watt Music Club (GoOut source)
-- ⏸️ Deferred: U Staré Paní (website down), Lucerna Velký sál (no November events), Cross Club (complex JS)
-- 🎯 Next to implement: **Divadlo Pod lampou** (Batch 3)
-- 📊 Progress: 11/26 venues (42%), 236 events
-- 💾 Git: Ready to commit
-- 🔄 Resume command: Continue with Divadlo Pod lampou from Batch 3
+- ✅ Completed today: Watt Music Club (GoOut source), Plan restructuring
+- ⏸️ Deferred (3): U Staré Paní (website down), Lucerna Velký sál (no events), Cross Club (complex JS)
+- 📊 Progress: **11/26 venues (42%)**, 236 events
+- 🎯 Remaining: **15 venues** to implement
+- 💾 Git: Plan updated, ready to commit
+- 🔄 Next priorities: O2 Arena, O2 Universum, Sportovní hala Fortuna (large venues)
 
 ---
 
@@ -98,50 +98,52 @@
 
 **Total: 236 events from 11 venues**
 
-**Next Steps (Batch 1 - deferred):**
-[ ] Implement Cross Club Playwright scraper (DEFERRED - complex JavaScript calendar)
-
 ---
 
 ### Phase 4: Complete All 26 Venues (GRADUAL IMPLEMENTATION) ⚠️ CRITICAL
 
-**Target:** 200+ events from all 26 venues, fully automated
+**Target:** 300+ events from all 26 venues, fully automated
 
-**Implementation Order (stepwise, one-by-one):**
+**Progress: 11/26 venues implemented (42%)**
 
-**Batch 1: High-value venues (next 5)**
-[ ] Lucerna Music Bar (20-30 expected) - Playwright
-[ ] Roxy (15-30 expected) - Playwright
-[ ] Vagon (10-25 expected) - Playwright
-[ ] Cross Club (8-20 expected) - Playwright
-[ ] Jazz Dock (8-20 expected) - Playwright
+**Status Overview:**
+```
+✅ Implemented (11):  Palác Akropolis, Rock Café, Lucerna Music Bar, Roxy,
+                      Vagon, Jazz Dock, Forum Karlín, MeetFactory,
+                      Malostranská beseda, Reduta Jazz Club, Watt Music Club
 
-**Batch 2: Medium venues**
-[x] Forum Karlín (5-15 expected) - Playwright ✅ 6 events
-[ ] Lucerna Velký sál (8-20 expected) - DEFERRED (no November events found, 5 debug attempts)
-[x] MeetFactory (3-12 expected) - Playwright + Infinite Scroll ✅ 15 events
-[x] Malostranská beseda (5-15 expected) - Playwright ✅ 28 events
+⏸️ Deferred (3):     Cross Club, Lucerna Velký sál, U Staré Paní
 
-**Batch 3: Small/specialized venues**
-[ ] U Staré Paní Jazz & Cocktail Club (5-15 expected) - DEFERRED (website unreachable, ERR_CONNECTION_REFUSED)
-[x] Reduta Jazz Club (5-20 expected) - Playwright ✅ 30 events
-[x] Watt Music Club (3-10 expected) - Playwright (GoOut) ✅ 3 events
-[ ] Divadlo Pod lampou (0-5 expected) - Playwright
+❌ Not Started (12): O2 Arena, O2 Universum, Sportovní hala Fortuna,
+                     Divadlo Pod lampou, KD Šeříkovka, KD JAS,
+                     Buena Vista Club, Dům hudby Plzeň, Moving Station,
+                     Papírna Plzeň, Měšťanská beseda, LOGSPEED CZ Aréna
+```
+
+**Remaining venues to implement (15):**
+
+**Priority 1: Large Prague venues (high event count)**
+[ ] O2 Arena (4-15 expected) - music only, filter out sports - Playwright
+[ ] O2 Universum (3-10 expected) - Playwright
+[ ] Sportovní hala Fortuna (2-8 expected) - music only, filter out sports - Playwright
+
+**Priority 2: Deferred venues (retry with alternative approaches)**
+[ ] Cross Club (8-20 expected) - DEFERRED (complex JavaScript calendar) - Playwright
+[ ] Lucerna Velký sál (8-20 expected) - DEFERRED (no November events found) - Playwright or skip
+[ ] U Staré Paní Jazz & Cocktail Club (5-15 expected) - DEFERRED (website unreachable) - try GoOut
+
+**Priority 3: Small Prague venues**
+[ ] Divadlo Pod lampou (0-5 expected) - primarily theatre, occasional music - Playwright
 [ ] Kulturní dům Šeříkovka (1-8 expected) - Playwright
 [ ] Kulturní dům JAS (1-8 expected) - Playwright
 
-**Batch 4: Large arenas (sporadic events)**
-[ ] O2 Arena (4-15 expected) - music only, no sports - Playwright
-[ ] O2 Universum (3-10 expected) - Playwright
-[ ] Sportovní hala Fortuna (2-8 expected) - music only - Playwright
-
-**Batch 5: Plzeň venues**
+**Priority 4: Plzeň venues**
 [ ] Buena Vista Club (3-10 expected) - Playwright
 [ ] Dům hudby Plzeň (2-10 expected) - Playwright
-[ ] Moving Station (2-10 expected) - Playwright
+[ ] Moving Station (2-10 expected) - filter out theatre/film, music only - Playwright
 [ ] Papírna Plzeň (1-8 expected) - Playwright
-[ ] Měšťanská beseda (3-12 expected) - Playwright
-[ ] LOGSPEED CZ Aréna (0-5 expected) - music only - Playwright
+[ ] Měšťanská beseda (3-12 expected) - filter out theatre - Playwright
+[ ] LOGSPEED CZ Aréna (0-5 expected) - primarily hockey, occasional music - Playwright
 
 ---
 
@@ -179,8 +181,23 @@
 ### Completed Phases
 [x] Phase 1: Proof of Concept (Palác Akropolis)
 [x] Phase 2: Framework & Configuration
-[x] Phase 3 (Partial): Rock Café automation with Playwright
+[x] Phase 3: Playwright-based automation framework (11 venues completed)
 
-### Completed Venues (2/26 - 8% complete)
+### Completed Venues (11/26 - 42% complete) ✅
+
+**Prague venues (10):**
 [x] Palác Akropolis - Beautiful Soup (29 events)
-[x] Rock Café - Playwright (23 events) 
+[x] Rock Café - Playwright (23 events)
+[x] Lucerna Music Bar - Playwright (31 events)
+[x] Roxy - Playwright (25 events)
+[x] Vagon - Playwright (26 events)
+[x] Jazz Dock - Playwright (20 events)
+[x] Forum Karlín - Playwright (6 events)
+[x] MeetFactory - Playwright + Infinite Scroll (15 events)
+[x] Malostranská beseda - Playwright (28 events)
+[x] Reduta Jazz Club - Playwright (30 events)
+
+**Plzeň venues (1):**
+[x] Watt Music Club - Playwright via GoOut (3 events)
+
+**Total: 236 events from 11 fully automated venues** 
