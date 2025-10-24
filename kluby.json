@@ -169,12 +169,13 @@
     },
     {
       "nazev": "Watt Music Club",
-      "url": "https://www.wattmusicclub.cz/",
-      "mesto": "Praha",
+      "url": "https://goout.net/en/watt-music-club/vztpab/events/",
+      "mesto": "Plzeň",
       "velikost": "maly",
       "min_akci": 3,
       "max_akci": 10,
-      "vikend_akce_pravdepodobnost": 0.6
+      "vikend_akce_pravdepodobnost": 0.6,
+      "poznamka": "Oficiální web nedostupný, data z GoOut"
     },
     {
       "nazev": "Buena Vista Club",
