@@ -1658,5 +1658,138 @@ class DivadloPodLampouBrowserScraper(BrowserScraper):
         return self.events
 
 
+class KDSerikovkaBrowserScraper(BrowserScraper):
+    """
+    Kulturní dům Šeříkovka scraper using Playwright
+    URL: https://www.serikovka.cz/
+    Note: Uses domcontentloaded wait strategy (faster than networkidle)
+    """
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://www.serikovka.cz/",
+            venue_name="Kulturní dům Šeříkovka",
+            city="Plzeň",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Main scraping method using Playwright with custom wait strategy"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+
+        # Fetch HTML with browser (use domcontentloaded instead of networkidle)
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=self.headless)
+                page = browser.new_page()
+
+                self.logger.info(f"Opening browser for {self.url}")
+                page.goto(self.url, wait_until="domcontentloaded", timeout=60000)
+
+                # Wait a bit more for content
+                page.wait_for_timeout(5000)
+
+                html = page.content()
+                browser.close()
+
+                self.logger.info(f"Successfully fetched {len(html)} chars of HTML")
+
+                # Parse HTML
+                return self.parse_events(html)
+
+        except Exception as e:
+            self.logger.error(f"Failed to fetch {self.url}: {e}")
+            raise
+
+    def parse_events(self, html: str) -> list:
+        """
+        Parse events from KD Šeříkovka HTML
+        Structure: <article class="mod-articles-item"> with <a class="mod-articles-link">
+        """
+        from bs4 import BeautifulSoup
+        import re
+
+        soup = BeautifulSoup(html, 'lxml')
+        events = []
+
+        # Find all article items
+        articles = soup.find_all('article', class_='mod-articles-item')
+        self.logger.info(f"Found {len(articles)} total article items")
+
+        for article in articles:
+            try:
+                # Get title link
+                link = article.find('a', class_='mod-articles-link')
+                if not link:
+                    continue
+
+                link_text = link.get_text(strip=True)
+                # Example: "03.11. 2025 / BONFIRE (DE) + WHITE TYGËR (UK)"
+
+                # Parse date using regex
+                date_match = re.search(r'(\d{1,2})\.(\d{1,2})\.\s*(\d{4})', link_text)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+                month = int(date_match.group(2))
+                year = int(date_match.group(3))
+
+                # Filter for our target month/year
+                if month != self.month or year != self.year:
+                    continue
+
+                # Extract artist name (everything after " / ")
+                if " / " in link_text:
+                    artist = link_text.split(" / ", 1)[1].strip()
+                else:
+                    artist = link_text.strip()
+
+                # Get URL
+                url = link.get('href', '')
+                if url and not url.startswith('http'):
+                    url = f"https://www.serikovka.cz{url}"
+
+                # Default time (no specific time shown on website)
+                time = "20:00"
+
+                # Filter out non-music events
+                artist_lower = artist.lower()
+                non_music_keywords = [
+                    'pawlowská', 'manuál', 'show', 'bambuláček',
+                    'divadlo', 'theatre', 'čtení', 'beseda'
+                ]
+
+                # Skip if it's clearly not music
+                if any(kw in artist_lower for kw in non_music_keywords):
+                    self.logger.debug(f"Skipping non-music event: {artist}")
+                    continue
+
+                # Add event
+                event = {
+                    'date': f"{day:02d}.{month:02d}.{year}",
+                    'day': day,
+                    'month': month,
+                    'year': year,
+                    'time': time,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url
+                }
+                events.append(event)
+                self.logger.debug(f"Added event: {artist} on {day}.{month}. at {time}")
+
+            except Exception as e:
+                self.logger.error(f"Error parsing article item: {e}")
+                continue
+
+        # Sort by day
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} music events for {self.month:02d}/{self.year}")
+        return self.events
+
+
 if __name__ == '__main__':
     main()
