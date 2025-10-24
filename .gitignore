@@ -16,6 +16,28 @@ concert_scraper_cache.*
 events_data.json
 palac_akropolis_events.json
 
+# Debug scripts (temporary development files)
+debug_*.py
+parse_*.py
+
+# HTML snapshots from debug scripts
+*_goout.html
+o2arena.html
+o2universum.html
+fortuna.html
+meetfactory*.html
+malostranskabeseda*.html
+reduta*.html
+
+# Log files
+scrape_output*.log
+
+# Temporary standalone test scripts (not in test suite)
+# Note: test_o2_scrapers.py is the real test file and should be tracked
+test_o2arena.py
+test_watt.py
+test_rockcafe.py
+
 # IDE
 .vscode/
 .idea/
