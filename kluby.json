@@ -188,31 +188,33 @@
     },
     {
       "nazev": "Divadlo Pod lampou",
-      "url": "https://www.divadlopodlampou.cz/",
-      "mesto": "Praha",
+      "url": "https://podlampou.cz/events/",
+      "mesto": "Plzeň",
       "velikost": "maly",
       "min_akci": 0,
       "max_akci": 5,
       "vikend_akce_pravdepodobnost": 0.3,
-      "poznamka": "Primárně divadlo, hudba občas"
+      "poznamka": "Primárně divadlo, hudba občas. Havířská 11, Plzeň"
     },
     {
       "nazev": "Kulturní dům Šeříkovka",
-      "url": "https://www.serikovna.cz/program/",
-      "mesto": "Praha",
+      "url": "https://www.serikovka.cz/",
+      "mesto": "Plzeň",
       "velikost": "maly",
       "min_akci": 1,
       "max_akci": 8,
-      "vikend_akce_pravdepodobnost": 0.4
+      "vikend_akce_pravdepodobnost": 0.4,
+      "poznamka": "Původně chybně uvedeno jako Praha"
     },
     {
       "nazev": "Kulturní dům JAS",
-      "url": "https://www.kdjas.cz/",
-      "mesto": "Praha",
+      "url": "https://goout.net/en/kd-jas/vzvtab/events/",
+      "mesto": "Plzeň",
       "velikost": "maly",
       "min_akci": 1,
       "max_akci": 8,
-      "vikend_akce_pravdepodobnost": 0.4
+      "vikend_akce_pravdepodobnost": 0.4,
+      "poznamka": "Původně chybně uvedeno jako Praha. Jablonského 39, Plzeň. Oficiální web nedostupný, data z GoOut"
     },
     {
       "nazev": "Dům hudby Plzeň",

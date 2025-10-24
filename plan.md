@@ -17,12 +17,13 @@
 **Current Month:** November 2025
 
 **📅 Session Status (2025-10-24):**
-- ✅ Completed today: Watt Music Club, O2 Arena (filters sports), O2 Universum, Plan restructuring
+- ✅ Completed today: Watt Music Club, O2 Arena (filters sports), O2 Universum, TDD tests, **Major data correction**
+- 🔍 Major discovery: 3 venues mislabeled as Praha are actually in Plzeň (Divadlo Pod lampou, KD Šeříkovka, KD JAS)
 - ⏸️ Deferred (4): U Staré Paní (website down), Lucerna Velký sál (no events), Cross Club (complex JS), Sportovní hala Fortuna (complex carousel)
-- 📊 Progress: **13/26 venues (50%)**, 251 events (+15 new)
-- 🎯 Remaining: **13 venues** to implement
-- 💾 Git: Ready to commit O2 venues implementation
-- 🔄 Next priorities: Small Prague venues (Divadlo Pod lampou, KD Šeříkovka, KD JAS), Plzeň venues
+- 📊 Progress: **13/26 venues (50%)**, 251 events
+- 🎯 Remaining: **13 venues** (all in Plzeň or deferred Praha venues)
+- 💾 Git: Ready to commit data corrections
+- 🔄 Next priorities: Plzeň venues (9 venues including 3 corrected ones)
 
 ---
 
@@ -121,9 +122,11 @@
 ⏸️ Deferred (4):     Cross Club, Lucerna Velký sál, U Staré Paní,
                      Sportovní hala Fortuna
 
-❌ Not Started (9):  Divadlo Pod lampou, KD Šeříkovka, KD JAS,
+❌ Not Started (9):  Divadlo Pod lampou*, KD Šeříkovka*, KD JAS*,
                      Buena Vista Club, Dům hudby Plzeň, Moving Station,
                      Papírna Plzeň, Měšťanská beseda, LOGSPEED CZ Aréna
+
+                     * Previously mislabeled as Praha, actually in Plzeň
 ```
 
 **Remaining venues to implement (13):**
@@ -139,11 +142,16 @@
 [ ] U Staré Paní Jazz & Cocktail Club (5-15 expected) - DEFERRED (website unreachable) - try GoOut
 
 **Priority 3: Small Prague venues**
-[ ] Divadlo Pod lampou (0-5 expected) - primarily theatre, occasional music - Playwright
-[ ] Kulturní dům Šeříkovka (1-8 expected) - Playwright
-[ ] Kulturní dům JAS (1-8 expected) - Playwright
+_Note: This category is now empty - all venues were incorrectly listed as Praha, they are actually in Plzeň_
+[x] Divadlo Pod lampou - **MOVED to Plzeň venues** (was incorrectly listed as Praha)
+[x] Kulturní dům Šeříkovka - **MOVED to Plzeň venues** (was incorrectly listed as Praha)
+[x] Kulturní dům JAS - **MOVED to Plzeň venues** (was incorrectly listed as Praha)
 
-**Priority 4: Plzeň venues**
+**Priority 4: Plzeň venues (now includes formerly mislabeled Praha venues)**
+[x] Watt Music Club (3-10 expected) - Playwright via GoOut ✅ 3 events (ALREADY IMPLEMENTED)
+[ ] Divadlo Pod lampou (0-5 expected) - primarily theatre, occasional music - Playwright (was mislabeled as Praha)
+[ ] Kulturní dům Šeříkovka (1-8 expected) - Playwright (was mislabeled as Praha)
+[ ] Kulturní dům JAS (1-8 expected) - Playwright via GoOut (was mislabeled as Praha)
 [ ] Buena Vista Club (3-10 expected) - Playwright
 [ ] Dům hudby Plzeň (2-10 expected) - Playwright
 [ ] Moving Station (2-10 expected) - filter out theatre/film, music only - Playwright
