@@ -227,12 +227,13 @@
     },
     {
       "nazev": "Papírna Plzeň",
-      "url": "https://www.informuji.cz/en/object/4515-papirna/",
+      "url": "https://goout.net/en/papirna/vzkoab/events/",
       "mesto": "Plzeň",
       "velikost": "maly",
       "min_akci": 1,
       "max_akci": 8,
-      "vikend_akce_pravdepodobnost": 0.4
+      "vikend_akce_pravdepodobnost": 0.4,
+      "poznamka": "Oficiální web nedostupný, data z GoOut"
     },
     {
       "nazev": "Měšťanská beseda",
