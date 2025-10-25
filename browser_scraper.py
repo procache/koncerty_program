@@ -1791,5 +1791,97 @@ class KDSerikovkaBrowserScraper(BrowserScraper):
         return self.events
 
 
+class BuenaVistaClubBrowserScraper(BrowserScraper):
+    """
+    Buena Vista Club scraper using Playwright
+    URL: https://www.buenavistaclub.cz/program-klubu.aspx
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://www.buenavistaclub.cz/program-klubu.aspx",
+            venue_name="Buena Vista Club",
+            city="Plzeň",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Main scraping method using Playwright"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+        html = self.fetch_html_with_browser()
+        return self.parse_events(html)
+
+    def parse_events(self, html: str) -> list:
+        """Parse events from Buena Vista Club page"""
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find all h2.nadpis elements (artist names)
+        # Each event follows pattern: h2 (artist) → h4 (date) → p (description)
+        h2_elements = soup.find_all('h2', class_='nadpis')
+        self.logger.info(f"Found {len(h2_elements)} h2.nadpis elements (event headers)")
+
+        events = []
+
+        for h2 in h2_elements:
+            try:
+                # Extract artist name from h2
+                artist_link = h2.find('a')
+                if not artist_link:
+                    continue
+
+                artist = artist_link.text.strip()
+
+                # Find next h4.podnadpis (date)
+                h4 = h2.find_next_sibling('h4', class_='podnadpis')
+                if not h4:
+                    continue
+
+                date_text = h4.text.strip()
+
+                # Parse date format: DD.MM.YYYY
+                date_match = re.search(r'(\d{2})\.(\d{2})\.(\d{4})', date_text)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+                month_num = int(date_match.group(2))
+                year_num = int(date_match.group(3))
+
+                # Only include events for the requested month and year
+                if month_num != self.month or year_num != self.year:
+                    self.logger.debug(f"Skipping event from {day:02d}.{month_num:02d}.{year_num} (looking for {self.month:02d}/{self.year})")
+                    continue
+
+                # Time is usually not specified, default to 20:00
+                time_str = "20:00"
+
+                # Create event
+                event = {
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': self.url
+                }
+
+                events.append(event)
+                self.logger.debug(f"Added event: {day:02d}.{month_num:02d} - {artist}")
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        # Sort by day
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} events for {self.month:02d}/{self.year}")
+        return self.events
+
+
 if __name__ == '__main__':
     main()
