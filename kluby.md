@@ -18,7 +18,6 @@ Watt Music Club
 Buena Vista Club
 Divadlo Pod lampou
 Kulturní dům Šeříkovka
-Kulturní dům JAS
 Dům hudby (Plzeň)
 Moving Station
 Papírna Plzeň

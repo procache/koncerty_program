@@ -207,16 +207,6 @@
       "poznamka": "Původně chybně uvedeno jako Praha"
     },
     {
-      "nazev": "Kulturní dům JAS",
-      "url": "https://goout.net/en/kd-jas/vzvtab/events/",
-      "mesto": "Plzeň",
-      "velikost": "maly",
-      "min_akci": 1,
-      "max_akci": 8,
-      "vikend_akce_pravdepodobnost": 0.4,
-      "poznamka": "Původně chybně uvedeno jako Praha. Jablonského 39, Plzeň. Oficiální web nedostupný, data z GoOut"
-    },
-    {
       "nazev": "Dům hudby Plzeň",
       "url": "https://www.dumhudbyplzen.cz/program/",
       "mesto": "Plzeň",
