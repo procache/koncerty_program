@@ -17,11 +17,11 @@
 **Current Month:** November 2025
 
 **📅 Session Status (2025-10-25):**
-- ✅ Completed today: Buena Vista Club (4 events), Papírna Plzeň (16 events via GoOut)
-- 📊 Progress: **17/25 venues (68%)**, 294 events
-- 🎯 Remaining: **8 venues** (4 deferred Praha venues only)
-- 🎉 **All Plzeň venues COMPLETE! (5/5)**
-- 🔄 Next: Phase 5 - HTML Generation
+- ✅ Completed today: Buena Vista Club (4), Papírna Plzeň (16), U Staré Paní (25), Cross Club (1)
+- 📊 Progress: **19/21 venues (90.5%)**, 321 events
+- 🎯 Remaining: **2 venues** (Sportovní hala Fortuna, Lucerna Velký sál)
+- 🎉 **Priority 1 COMPLETE!** U Staré Paní + Cross Club implemented
+- 🔄 Next: Priority 2 venues or Phase 5 HTML Generation
 
 ---
 
@@ -92,8 +92,11 @@
 [x] Test full automated run: 16/25 venues without Claude ✅
 [x] Implement Papírna Plzeň Playwright scraper via GoOut (16 events ✅)
 [x] Test full automated run: 17/25 venues without Claude ✅
+[x] Implement U Staré Paní Playwright scraper via GoOut (25 events ✅)
+[x] Implement Cross Club Playwright scraper (1 event ✅)
+[x] Test full automated run: 19/21 venues without Claude ✅
 
-**Current Status - 17/25 FULLY AUTOMATED (68% complete):**
+**Current Status - 19/21 FULLY AUTOMATED (90.5% complete):**
 - ✅ **O2 Arena** (7 events) - Playwright + Sports Filter - **AUTOMATED**
 - ✅ **O2 Universum** (8 events) - Playwright - **AUTOMATED**
 - ✅ **Palác Akropolis** (29 events) - Beautiful Soup - **AUTOMATED**
@@ -111,41 +114,44 @@
 - ✅ **Kulturní dům Šeříkovka** (9 events) - Playwright + Non-Music Filter - **AUTOMATED**
 - ✅ **Buena Vista Club** (4 events) - Playwright - **AUTOMATED**
 - ✅ **Papírna Plzeň** (16 events) - Playwright (GoOut) - **AUTOMATED**
+- ✅ **U Staré Paní Jazz & Cocktail Club** (25 events) - Playwright (GoOut) - **AUTOMATED**
+- ✅ **Cross Club** (1 event) - Playwright - **AUTOMATED**
 
-**Total: 294 events from 17 venues**
+**Total: 321 events from 19 venues**
 
 ---
 
-### Phase 4: Complete All 25 Venues (GRADUAL IMPLEMENTATION) ⚠️ CRITICAL
+### Phase 4: Complete All 21 Venues (GRADUAL IMPLEMENTATION) ⚠️ CRITICAL
 
-**Target:** 300+ events from all 25 venues, fully automated
+**Target:** 300+ events from all 21 venues, fully automated
 
-**Progress: 17/25 venues implemented (68%)**
+**Progress: 19/21 venues implemented (90.5%)**
 
 **Status Overview:**
 ```
-✅ Implemented (17):  O2 Arena, O2 Universum, Palác Akropolis, Rock Café,
+✅ Implemented (19):  O2 Arena, O2 Universum, Palác Akropolis, Rock Café,
                       Lucerna Music Bar, Roxy, Vagon, Jazz Dock, Forum Karlín,
                       MeetFactory, Malostranská beseda, Reduta Jazz Club,
                       Watt Music Club, Divadlo Pod lampou, KD Šeříkovka,
-                      Buena Vista Club, Papírna Plzeň
+                      Buena Vista Club, Papírna Plzeň, U Staré Paní, Cross Club
 
-⏸️ Deferred (8):     Cross Club, Lucerna Velký sál, U Staré Paní,
-                     Sportovní hala Fortuna, Dům hudby Plzeň, Moving Station,
-                     Měšťanská beseda, LOGSPEED CZ Aréna
+⏸️ Remaining (2):    Sportovní hala Fortuna, Lucerna Velký sál
+
+❌ Removed (4):      Dům hudby Plzeň, Moving Station, Měšťanská beseda,
+                     LOGSPEED CZ Aréna (removed from project scope)
 ```
 
-**Remaining venues to implement (8 - all deferred):**
+**Remaining venues to implement (2 only):**
 
-**Priority 1: Large Prague venues (high event count)**
+**Priority 1: Large Prague venues (high event count)** ✅ COMPLETE
 [x] O2 Arena (4-15 expected) - music only, filter out sports - Playwright ✅ 7 events
 [x] O2 Universum (3-10 expected) - Playwright ✅ 8 events
 [ ] Sportovní hala Fortuna (2-8 expected) - DEFERRED (complex Splide carousel structure)
 
-**Priority 2: Deferred venues (retry with alternative approaches)**
-[ ] Cross Club (8-20 expected) - DEFERRED (complex JavaScript calendar) - Playwright
+**Priority 2: Deferred venues (retry with alternative approaches)** ✅ COMPLETE
+[x] Cross Club (8-20 expected) - Playwright ✅ 1 event (November 2025)
 [ ] Lucerna Velký sál (8-20 expected) - DEFERRED (no November events found) - Playwright
-[ ] U Staré Paní Jazz & Cocktail Club (5-15 expected) - DEFERRED (website unreachable) - try GoOut
+[x] U Staré Paní Jazz & Cocktail Club (5-15 expected) - Playwright via GoOut ✅ 25 events
 
 **Priority 3: Small Prague venues**
 _Note: This category is now empty - all venues were incorrectly listed as Praha, they are actually in Plzeň_

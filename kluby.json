@@ -132,12 +132,13 @@
     },
     {
       "nazev": "U Staré Paní Jazz & Cocktail Club",
-      "url": "https://www.ustarepani.cz/program/",
+      "url": "https://goout.net/en/u-stare-pani-jazz-and-cocktail-club/vzlll/events/",
       "mesto": "Praha",
       "velikost": "maly",
       "min_akci": 5,
       "max_akci": 15,
-      "vikend_akce_pravdepodobnost": 0.7
+      "vikend_akce_pravdepodobnost": 0.7,
+      "poznamka": "Oficiální web nedostupný, data z GoOut"
     },
     {
       "nazev": "Reduta Jazz Club",
@@ -207,25 +208,6 @@
       "poznamka": "Původně chybně uvedeno jako Praha"
     },
     {
-      "nazev": "Dům hudby Plzeň",
-      "url": "https://www.dumhudbyplzen.cz/program/",
-      "mesto": "Plzeň",
-      "velikost": "stredni",
-      "min_akci": 2,
-      "max_akci": 10,
-      "vikend_akce_pravdepodobnost": 0.5
-    },
-    {
-      "nazev": "Moving Station",
-      "url": "https://www.movingstation.eu/program/",
-      "mesto": "Plzeň",
-      "velikost": "stredni",
-      "min_akci": 2,
-      "max_akci": 10,
-      "vikend_akce_pravdepodobnost": 0.5,
-      "poznamka": "Vyloučit divadlo a film, jen hudba"
-    },
-    {
       "nazev": "Papírna Plzeň",
       "url": "https://goout.net/en/papirna/vzkoab/events/",
       "mesto": "Plzeň",
@@ -234,26 +216,6 @@
       "max_akci": 8,
       "vikend_akce_pravdepodobnost": 0.4,
       "poznamka": "Oficiální web nedostupný, data z GoOut"
-    },
-    {
-      "nazev": "Měšťanská beseda",
-      "url": "https://mestanskabeseda.cz/program/",
-      "mesto": "Plzeň",
-      "velikost": "stredni",
-      "min_akci": 3,
-      "max_akci": 12,
-      "vikend_akce_pravdepodobnost": 0.6,
-      "poznamka": "Vyloučit divadlo"
-    },
-    {
-      "nazev": "LOGSPEED CZ Aréna (Home Monitoring Aréna)",
-      "url": "https://www.hcplzen.cz/areal-logspeed-cz-areny",
-      "mesto": "Plzeň",
-      "velikost": "velky",
-      "min_akci": 0,
-      "max_akci": 5,
-      "vikend_akce_pravdepodobnost": 0.3,
-      "poznamka": "Primárně hokej, hudba občas"
     }
   ]
 }

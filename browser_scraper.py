@@ -1977,5 +1977,211 @@ class BuenaVistaClubBrowserScraper(BrowserScraper):
         return self.events
 
 
+class UStarePaniJazzClubBrowserScraper(BrowserScraper):
+    """
+    U Staré Paní Jazz & Cocktail Club scraper using Playwright (GoOut source)
+    URL: https://goout.net/en/u-stare-pani-jazz-and-cocktail-club/vzlll/events/
+    Note: Official website unavailable, using GoOut.net as data source
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://goout.net/en/u-stare-pani-jazz-and-cocktail-club/vzlll/events/",
+            venue_name="U Staré Paní Jazz & Cocktail Club",
+            city="Praha",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Main scraping method using Playwright"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+        html = self.fetch_html_with_browser(wait_for_selector='div.event')
+        return self.parse_html(html)
+
+    def parse_html(self, html: str) -> List[Dict]:
+        """Parse GoOut events page and extract events"""
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find all event divs
+        event_divs = soup.find_all('div', class_='event')
+        self.logger.info(f"Found {len(event_divs)} event divs on page")
+
+        events = []
+
+        for event_div in event_divs:
+            try:
+                # Extract title
+                title_link = event_div.find('a', class_='title')
+                if not title_link:
+                    continue
+
+                artist = title_link.text.strip()
+                relative_url = title_link.get('href', '')
+                url = f"https://goout.net{relative_url}" if relative_url.startswith('/') else relative_url
+
+                # Extract time element
+                time_elem = event_div.find('time')
+                if not time_elem:
+                    continue
+
+                # Parse date/time from text like "Sat, 01/11, 21:00"
+                time_text = time_elem.text.strip()
+
+                # Extract day and month from "01/11"
+                date_match = re.search(r'(\d{2})/(\d{2})', time_text)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+                month_num = int(date_match.group(2))
+
+                # Only include events for the requested month
+                if month_num != self.month:
+                    self.logger.debug(f"Skipping event from month {month_num} (looking for {self.month})")
+                    continue
+
+                # Extract time (21:00)
+                time_match = re.search(r'(\d{2}:\d{2})', time_text)
+                time_str = time_match.group(1) if time_match else "20:00"
+
+                # Create event
+                event = {
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url
+                }
+
+                events.append(event)
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        # Sort by day
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} events for {self.month:02d}/{self.year}")
+        return self.events
+
+
+class CrossClubBrowserScraper(BrowserScraper):
+    """
+    Cross Club scraper using Playwright
+    URL: https://www.crossclub.cz/cs/program/
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://www.crossclub.cz/cs/program/",
+            venue_name="Cross Club",
+            city="Praha",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Main scraping method using Playwright"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+        html = self.fetch_html_with_browser()
+        return self.parse_events(html)
+
+    def parse_events(self, html: str) -> list:
+        """Parse events from Cross Club page"""
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find all div.predel elements (date separators)
+        # Structure: <div class="predel"><div>01. 11. 2025 - Sobota</div></div>
+        # Followed by: <h2><a href="...">EVENT NAME</a></h2>
+
+        predel_divs = soup.find_all('div', class_='predel')
+        self.logger.info(f"Found {len(predel_divs)} date separator divs")
+
+        events = []
+
+        for predel in predel_divs:
+            try:
+                # Extract date from inner div
+                inner_div = predel.find('div')
+                if not inner_div:
+                    continue
+
+                date_text = inner_div.text.strip()
+                # Example: "01. 11. 2025 - Sobota"
+
+                # Parse date using regex: DD. MM. YYYY
+                date_match = re.search(r'(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})', date_text)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+                month_num = int(date_match.group(2))
+                year_num = int(date_match.group(3))
+
+                # Only include events for the requested month/year
+                if month_num != self.month or year_num != self.year:
+                    self.logger.debug(f"Skipping event from {day:02d}.{month_num:02d}.{year_num} (looking for {self.month:02d}/{self.year})")
+                    continue
+
+                # Find the next h2 element (event name)
+                # Structure: div.predel → div.article → h2
+                # So we use find_next instead of find_next_sibling
+                h2 = predel.find_next('h2')
+                if not h2:
+                    continue
+
+                # Extract artist name from h2 > a
+                artist_link = h2.find('a')
+                if not artist_link:
+                    continue
+
+                artist = artist_link.text.strip()
+                relative_url = artist_link.get('href', '')
+                url = f"https://www.crossclub.cz{relative_url}" if relative_url.startswith('/') else relative_url
+
+                # Time is usually not specified on Cross Club, default to 20:00
+                time_str = "20:00"
+
+                # Filter out non-music events (theatre, film, etc.)
+                artist_lower = artist.lower()
+                non_music_keywords = ['divadlo', 'theatre', 'film', 'movie', 'přednáška', 'lecture']
+
+                if any(kw in artist_lower for kw in non_music_keywords):
+                    self.logger.debug(f"Skipping non-music event: {artist}")
+                    continue
+
+                # Create event
+                event = {
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url
+                }
+
+                events.append(event)
+                self.logger.debug(f"Added event: {day:02d}.{month_num:02d} - {artist}")
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        # Sort by day
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} events for {self.month:02d}/{self.year}")
+        return self.events
+
+
 if __name__ == '__main__':
     main()

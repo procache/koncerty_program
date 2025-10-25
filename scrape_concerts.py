@@ -206,6 +206,24 @@ def scrape_venue(venue: Dict, month: int, year: int) -> Tuple[List[Dict], Dict, 
             logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
             return events, validation, None
 
+        if venue_name == "U Staré Paní Jazz & Cocktail Club":
+            from browser_scraper import UStarePaniJazzClubBrowserScraper
+            logger.info(f"{venue_name}: Using Playwright via GoOut (automated)")
+            scraper = UStarePaniJazzClubBrowserScraper(month=month, year=year)
+            events = scraper.scrape()
+            validation = scraper.validate(min_events=min_events, max_events=max_events)
+            logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+            return events, validation, None
+
+        if venue_name == "Cross Club":
+            from browser_scraper import CrossClubBrowserScraper
+            logger.info(f"{venue_name}: Using Playwright (automated)")
+            scraper = CrossClubBrowserScraper(month=month, year=year)
+            events = scraper.scrape()
+            validation = scraper.validate(min_events=min_events, max_events=max_events)
+            logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+            return events, validation, None
+
         # 2. Try Beautiful Soup scraper (static HTML) - AUTOMATED
         if venue_name == "Palác Akropolis":
             from scraper_akropolis import AkropolisScraper
