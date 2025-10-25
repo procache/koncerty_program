@@ -1791,5 +1791,103 @@ class KDSerikovkaBrowserScraper(BrowserScraper):
         return self.events
 
 
+class KDJASBrowserScraper(BrowserScraper):
+    """
+    Kulturní dům JAS scraper using Playwright (GoOut source)
+    URL: https://goout.net/en/kd-jas/vzvtab/events/
+    Note: Official website unavailable, using GoOut.net as data source
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://goout.net/en/kd-jas/vzvtab/events/",
+            venue_name="Kulturní dům JAS",
+            city="Plzeň",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Main scraping method using Playwright"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+
+        # Fetch HTML with browser (no wait_for_selector as venue may have 0 events)
+        html = self.fetch_html_with_browser()
+
+        # Parse HTML
+        return self.parse_html(html)
+
+    def parse_html(self, html: str) -> List[Dict]:
+        """Parse GoOut events page and extract events"""
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find all event divs
+        event_divs = soup.find_all('div', class_='event')
+        self.logger.info(f"Found {len(event_divs)} event divs on page")
+
+        events = []
+
+        for event_div in event_divs:
+            try:
+                # Extract title
+                title_link = event_div.find('a', class_='title')
+                if not title_link:
+                    continue
+
+                artist = title_link.text.strip()
+                relative_url = title_link.get('href', '')
+                url = f"https://goout.net{relative_url}" if relative_url.startswith('/') else relative_url
+
+                # Extract time element
+                time_elem = event_div.find('time')
+                if not time_elem:
+                    continue
+
+                # Parse date/time from text like "Sat, 01/11, 21:00"
+                time_text = time_elem.text.strip()
+
+                # Extract day and month from "01/11"
+                date_match = re.search(r'(\d{2})/(\d{2})', time_text)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+                month_num = int(date_match.group(2))
+
+                # Only include events for the requested month
+                if month_num != self.month:
+                    self.logger.debug(f"Skipping event from month {month_num} (looking for {self.month})")
+                    continue
+
+                # Extract time (21:00)
+                time_match = re.search(r'(\d{2}:\d{2})', time_text)
+                time_str = time_match.group(1) if time_match else "20:00"
+
+                # Create event
+                event = {
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url
+                }
+
+                events.append(event)
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        # Sort by day
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} events for {self.month:02d}/{self.year}")
+        return self.events
+
+
 if __name__ == '__main__':
     main()
