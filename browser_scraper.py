@@ -2183,5 +2183,117 @@ class CrossClubBrowserScraper(BrowserScraper):
         return self.events
 
 
+class TipsportArenaBrowserScraper(BrowserScraper):
+    """
+    Tipsport Arena (Sportovní hala Fortuna) scraper using Playwright
+    URL: https://www.ticketportal.cz/venue/TIPSPORT-ARENA
+    Data source: Ticketportal (official tickets website)
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://www.ticketportal.cz/venue/TIPSPORT-ARENA",
+            venue_name="Sportovní hala Fortuna (Tipsport Arena)",
+            city="Praha",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Main scraping method using Playwright"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+        html = self.fetch_html_with_browser()
+        return self.parse_events(html)
+
+    def parse_events(self, html: str) -> list:
+        """Parse events from Ticketportal page"""
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find all event date elements
+        # Structure: div[itemprop="startDate"][content="2025-11-07T18:30"]
+        date_divs = soup.find_all('div', attrs={'itemprop': 'startDate'})
+        self.logger.info(f"Found {len(date_divs)} date elements on page")
+
+        events = []
+
+        for date_div in date_divs:
+            try:
+                # Extract ISO date from content attribute
+                # Example: "2025-11-07T18:30"
+                iso_date = date_div.get('content', '')
+                if not iso_date:
+                    continue
+
+                # Parse ISO date: YYYY-MM-DDTHH:MM
+                date_match = re.search(r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})', iso_date)
+                if not date_match:
+                    continue
+
+                year_num = int(date_match.group(1))
+                month_num = int(date_match.group(2))
+                day = int(date_match.group(3))
+                hour = date_match.group(4)
+                minute = date_match.group(5)
+
+                # Only include events for the requested month/year
+                if month_num != self.month or year_num != self.year:
+                    self.logger.debug(f"Skipping event from {day:02d}.{month_num:02d}.{year_num} (looking for {self.month:02d}/{self.year})")
+                    continue
+
+                time_str = f"{hour}:{minute}"
+
+                # Find the event name
+                # Navigate up to find the container, then find the a.event element
+                container = date_div.find_parent('div', class_='ticket-cover')
+                if not container:
+                    continue
+
+                event_link = container.find('a', class_='event')
+                if not event_link:
+                    continue
+
+                artist = event_link.text.strip()
+                relative_url = event_link.get('href', '')
+                url = f"https://www.ticketportal.cz{relative_url}" if relative_url.startswith('/') else relative_url
+
+                # Filter out sports events (hockey, football, etc.)
+                artist_lower = artist.lower()
+                sports_keywords = [
+                    'hokej', 'hockey', 'sparta', 'slavia', 'fotbal', 'football',
+                    'extraliga', 'liiga', 'nhl', 'play-off', 'playoff',
+                    'házená', 'handball', 'basket', 'volejbal', 'volleyball'
+                ]
+
+                if any(kw in artist_lower for kw in sports_keywords):
+                    self.logger.debug(f"Skipping sports event: {artist}")
+                    continue
+
+                # Create event
+                event = {
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url
+                }
+
+                events.append(event)
+                self.logger.debug(f"Added event: {day:02d}.{month_num:02d} - {artist}")
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        # Sort by day
+        self.events = sorted(events, key=lambda x: x['day'])
+
+        self.logger.info(f"Found {len(self.events)} events for {self.month:02d}/{self.year}")
+        return self.events
+
+
 if __name__ == '__main__':
     main()

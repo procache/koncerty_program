@@ -35,13 +35,13 @@
     },
     {
       "nazev": "Sportovní hala Fortuna (Tipsport Arena)",
-      "url": "https://www.sportovnihalafortuna.cz/",
+      "url": "https://www.ticketportal.cz/venue/TIPSPORT-ARENA",
       "mesto": "Praha",
       "velikost": "velky",
       "min_akci": 2,
       "max_akci": 8,
       "vikend_akce_pravdepodobnost": 0.6,
-      "poznamka": "Jen hudební koncerty, ne sport"
+      "poznamka": "Data z Ticketportal, jen hudební koncerty (ne sport/hokej)"
     },
     {
       "nazev": "Forum Karlín",
