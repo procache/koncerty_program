@@ -163,24 +163,24 @@ def generate_html(data):
         }}
 
         .calendar-section {{
-            padding: 30px;
+            padding: 20px;
             background: #f8f9fa;
             border-bottom: 1px solid #dee2e6;
         }}
 
         .calendar-title {{
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #2c3e50;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 600;
         }}
 
         .calendar-grid {{
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-            max-width: 800px;
+            gap: 5px;
+            max-width: 400px;
             margin: 0 auto;
         }}
 
@@ -188,8 +188,8 @@ def generate_html(data):
             text-align: center;
             font-weight: 600;
             color: #6c757d;
-            padding: 10px;
-            font-size: 0.9rem;
+            padding: 5px;
+            font-size: 0.75rem;
         }}
 
         .calendar-day {{
@@ -198,11 +198,12 @@ def generate_html(data):
             align-items: center;
             justify-content: center;
             background: white;
-            border: 2px solid #dee2e6;
-            border-radius: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 600;
+            font-size: 0.85rem;
             color: #2c3e50;
             position: relative;
         }}
@@ -216,9 +217,9 @@ def generate_html(data):
         .calendar-day.has-events::after {{
             content: '';
             position: absolute;
-            bottom: 5px;
-            width: 6px;
-            height: 6px;
+            bottom: 2px;
+            width: 4px;
+            height: 4px;
             background: #667eea;
             border-radius: 50%;
         }}
@@ -245,14 +246,15 @@ def generate_html(data):
 
         .clear-date-filter {{
             display: none;
-            margin: 20px auto 0;
-            padding: 10px 20px;
+            margin: 15px auto 0;
+            padding: 8px 16px;
             background: #6c757d;
             color: white;
             border: none;
-            border-radius: 20px;
+            border-radius: 15px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 0.85rem;
             transition: all 0.3s;
         }}
 
