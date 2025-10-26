@@ -56,7 +56,7 @@ def generate_html(data):
 
         body {{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a1a1a;
             min-height: 100vh;
             padding: 20px;
         }}
@@ -64,17 +64,18 @@ def generate_html(data):
         .container {{
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
+            background: #2d2d2d;
             border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
             overflow: hidden;
         }}
 
         header {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #1a1a1a;
+            color: #e0e0e0;
             padding: 30px;
             text-align: center;
+            border-bottom: 2px solid #404040;
         }}
 
         h1 {{
@@ -87,29 +88,10 @@ def generate_html(data):
             opacity: 0.9;
         }}
 
-        .stats {{
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }}
-
-        .stat {{
-            background: rgba(255,255,255,0.2);
-            padding: 10px 20px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-        }}
-
-        .stat strong {{
-            font-size: 1.5rem;
-        }}
-
         .controls {{
             padding: 20px 30px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
+            background: #242424;
+            border-bottom: 1px solid #404040;
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
@@ -124,16 +106,18 @@ def generate_html(data):
         .search-box input {{
             width: 100%;
             padding: 12px 20px;
-            border: 2px solid #dee2e6;
+            border: 2px solid #555;
             border-radius: 25px;
             font-size: 1rem;
             transition: all 0.3s;
+            background: #1a1a1a;
+            color: #e0e0e0;
         }}
 
         .search-box input:focus {{
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #4a9eff;
+            box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.2);
         }}
 
         .city-filters {{
@@ -143,9 +127,9 @@ def generate_html(data):
 
         .city-filter {{
             padding: 10px 20px;
-            border: 2px solid #667eea;
-            background: white;
-            color: #667eea;
+            border: 2px solid #555;
+            background: #1a1a1a;
+            color: #e0e0e0;
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s;
@@ -153,25 +137,26 @@ def generate_html(data):
         }}
 
         .city-filter:hover {{
-            background: #667eea;
-            color: white;
+            background: #404040;
+            border-color: #4a9eff;
         }}
 
         .city-filter.active {{
-            background: #667eea;
-            color: white;
+            background: #4a9eff;
+            color: #1a1a1a;
+            border-color: #4a9eff;
         }}
 
         .calendar-section {{
             padding: 20px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
+            background: #242424;
+            border-bottom: 1px solid #404040;
         }}
 
         .calendar-title {{
             text-align: center;
             margin-bottom: 15px;
-            color: #2c3e50;
+            color: #e0e0e0;
             font-size: 1.1rem;
             font-weight: 600;
         }}
@@ -187,7 +172,7 @@ def generate_html(data):
         .calendar-day-header {{
             text-align: center;
             font-weight: 600;
-            color: #6c757d;
+            color: #888;
             padding: 5px;
             font-size: 0.75rem;
         }}
@@ -197,20 +182,20 @@ def generate_html(data):
             display: flex;
             align-items: center;
             justify-content: center;
-            background: white;
-            border: 1px solid #dee2e6;
+            background: #1a1a1a;
+            border: 1px solid #555;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 600;
             font-size: 0.85rem;
-            color: #2c3e50;
+            color: #e0e0e0;
             position: relative;
         }}
 
         .calendar-day:hover {{
-            border-color: #667eea;
-            background: #f0f4ff;
+            border-color: #4a9eff;
+            background: #2d2d2d;
             transform: translateY(-2px);
         }}
 
@@ -220,18 +205,18 @@ def generate_html(data):
             bottom: 2px;
             width: 4px;
             height: 4px;
-            background: #667eea;
+            background: #4a9eff;
             border-radius: 50%;
         }}
 
         .calendar-day.active {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: #667eea;
+            background: #4a9eff;
+            color: #1a1a1a;
+            border-color: #4a9eff;
         }}
 
         .calendar-day.active::after {{
-            background: white;
+            background: #1a1a1a;
         }}
 
         .calendar-day.empty {{
@@ -248,9 +233,9 @@ def generate_html(data):
             display: none;
             margin: 15px auto 0;
             padding: 8px 16px;
-            background: #6c757d;
-            color: white;
-            border: none;
+            background: #404040;
+            color: #e0e0e0;
+            border: 1px solid #555;
             border-radius: 15px;
             cursor: pointer;
             font-weight: 600;
@@ -259,7 +244,8 @@ def generate_html(data):
         }}
 
         .clear-date-filter:hover {{
-            background: #5a6268;
+            background: #555;
+            border-color: #4a9eff;
         }}
 
         .clear-date-filter.visible {{
@@ -268,11 +254,12 @@ def generate_html(data):
 
         .events-container {{
             padding: 30px;
+            background: #2d2d2d;
         }}
 
         .event-card {{
-            background: white;
-            border: 1px solid #dee2e6;
+            background: #1a1a1a;
+            border: 1px solid #404040;
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 15px;
@@ -282,17 +269,19 @@ def generate_html(data):
         }}
 
         .event-card:hover {{
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 5px 15px rgba(74, 158, 255, 0.2);
             transform: translateY(-2px);
+            border-color: #555;
         }}
 
         .event-date {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #404040;
+            color: #4a9eff;
             border-radius: 10px;
             padding: 15px;
             text-align: center;
             min-width: 80px;
+            border: 1px solid #555;
         }}
 
         .event-day {{
@@ -314,34 +303,36 @@ def generate_html(data):
         .event-artist {{
             font-size: 1.3rem;
             font-weight: 600;
-            color: #2c3e50;
+            color: #e0e0e0;
             margin-bottom: 8px;
         }}
 
         .event-details {{
-            color: #6c757d;
+            color: #999;
             font-size: 0.95rem;
         }}
 
         .event-venue {{
             font-weight: 600;
-            color: #667eea;
+            color: #4a9eff;
         }}
 
         .event-city {{
             display: inline-block;
             padding: 3px 10px;
-            background: #e7f3ff;
-            color: #0066cc;
+            background: #2d4a6b;
+            color: #4a9eff;
             border-radius: 12px;
             font-size: 0.85rem;
             font-weight: 600;
             margin-left: 10px;
+            border: 1px solid #3a5a7a;
         }}
 
         .event-city.plzen {{
-            background: #fff3e0;
-            color: #e65100;
+            background: #4a3a2d;
+            color: #ff9f4a;
+            border: 1px solid #5a4a3d;
         }}
 
         .event-time {{
@@ -355,36 +346,39 @@ def generate_html(data):
         .event-link a {{
             display: inline-block;
             padding: 10px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #4a9eff;
+            color: #1a1a1a;
             text-decoration: none;
             border-radius: 20px;
             font-weight: 600;
             transition: all 0.3s;
+            border: 1px solid #4a9eff;
         }}
 
         .event-link a:hover {{
             transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 5px 15px rgba(74, 158, 255, 0.4);
+            background: #5aaeff;
         }}
 
         .no-results {{
             text-align: center;
             padding: 60px 20px;
-            color: #6c757d;
+            color: #888;
         }}
 
         .no-results h2 {{
             font-size: 1.5rem;
             margin-bottom: 10px;
+            color: #e0e0e0;
         }}
 
         footer {{
-            background: #f8f9fa;
+            background: #1a1a1a;
             padding: 20px;
             text-align: center;
-            color: #6c757d;
-            border-top: 1px solid #dee2e6;
+            color: #888;
+            border-top: 1px solid #404040;
         }}
 
         @media (max-width: 768px) {{
@@ -421,20 +415,6 @@ def generate_html(data):
         <header>
             <h1>Koncerty {month_name} {year}</h1>
             <div class="subtitle">Praha & Plzeň</div>
-            <div class="stats">
-                <div class="stat">
-                    <strong>{total_events}</strong> koncertů
-                </div>
-                <div class="stat">
-                    <strong>{len(data['venues'])}</strong> klubů
-                </div>
-                <div class="stat">
-                    Praha: <strong>{praha_count}</strong>
-                </div>
-                <div class="stat">
-                    Plzeň: <strong>{plzen_count}</strong>
-                </div>
-            </div>
         </header>
 
         <div class="calendar-section">
