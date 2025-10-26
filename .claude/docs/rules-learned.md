@@ -266,19 +266,155 @@ pattern3
 
 ---
 
+### Rule: Use alternative data sources when official websites are unavailable or complex
+**Context:** U Staré Paní, Papírna Plzeň, Tipsport Arena - 2025-10-25
+
+**Alternative sources:**
+1. **GoOut.net** - Standardized event aggregator
+   - URL pattern: `https://goout.net/en/{venue-slug}/{venue-id}/events/`
+   - Pros: Standardized HTML structure, reliable uptime
+   - Cons: May have fewer events than official site
+
+2. **Ticketportal.cz** - Official ticketing platform
+   - URL pattern: `https://www.ticketportal.cz/venue/{VENUE-NAME}`
+   - Pros: Official data source, includes ticket links
+   - Cons: Only venues that use Ticketportal
+
+**When to apply:**
+- Official website unreachable (ERR_CONNECTION_REFUSED, DNS failure)
+- Official website has complex JavaScript (carousel, infinite scroll that won't load)
+- User provides alternative source as authoritative
+
+**Examples:**
+- U Staré Paní: Official site down → GoOut (25 events)
+- Papírna Plzeň: Complex structure → GoOut (16 events)
+- Tipsport Arena: Complex Splide carousel → Ticketportal (5 events)
+
+---
+
+### Rule: Use find_next() for nested HTML structures, not find_next_sibling()
+**Context:** Cross Club scraper - 2025-10-25
+
+**Technical pattern:**
+```python
+# WRONG: Only searches siblings at same level
+h2 = predel.find_next_sibling('h2')  # Returns None
+
+# CORRECT: Traverses down the tree
+h2 = predel.find_next('h2')  # Finds h2 inside nested div.article
+```
+
+**When to apply:**
+- HTML structure has intermediate wrapper divs
+- `find_next_sibling()` returns None unexpectedly
+- Element you're looking for is nested inside sibling
+
+**HTML example:**
+```html
+<div class="predel">Date separator</div>
+<div class="article">     <!-- Intermediate wrapper -->
+  <h2>Event name</h2>     <!-- Target element -->
+</div>
+```
+
+---
+
+### Rule: Validate low event counts before flagging as errors
+**Context:** Cross Club - 2025-10-25
+
+**Pattern:**
+- Some venues have legitimately low event counts for certain months
+- Always verify with manual check before assuming scraper failure
+- Low count ≠ broken scraper
+
+**Detection:**
+```python
+# Don't immediately fail on low counts
+if len(events) < min_expected:
+    # Log warning but allow completion
+    logger.warning(f"Low event count: {len(events)} (expected {min_expected}+)")
+    # Manual verification needed
+```
+
+**Example:**
+- Cross Club November 2025: Expected 8-20, found 1
+- Manual check confirmed: Only 1 event scheduled for November
+- Status: GREEN (accurate data, not scraper bug)
+
+---
+
+### Rule: Use ISO 8601 datetime parsing for attribute-based dates
+**Context:** Tipsport Arena (Ticketportal) - 2025-10-25
+
+**Technical pattern:**
+```python
+# Extract from data attribute, not visible text
+iso_date = date_div.get('content', '')  # "2025-11-07T18:30"
+dt = datetime.fromisoformat(iso_date)
+
+# Extract components
+day = dt.day
+month = dt.month
+year = dt.year
+time = dt.strftime('%H:%M')
+```
+
+**When to apply:**
+- Dates stored in `data-*` attributes or `content` attributes
+- Format is ISO 8601 (YYYY-MM-DDTHH:MM or YYYY-MM-DDTHH:MM:SS)
+- Microdata/Schema.org markup (`itemprop="startDate"`)
+
+**HTML example:**
+```html
+<div itemprop="startDate" content="2025-11-07T18:30">
+  Čt 7. listopadu 2025, 18:30
+</div>
+```
+
+---
+
+### Rule: Iterate on UI sizing based on user feedback
+**Context:** Interactive calendar feature - 2025-10-26
+
+**Pattern:**
+1. Implement feature with reasonable defaults
+2. Show to user
+3. Adjust sizing/spacing based on feedback
+4. Iterate until user satisfied
+
+**Example:**
+- **V1:** Calendar 800px wide → User: "Too large"
+- **V2:** Calendar 400px wide → User: "Perfect"
+
+**Key metrics to adjust:**
+- `max-width` (overall size)
+- `gap` (spacing between elements)
+- `padding` (internal spacing)
+- `font-size` (text size)
+- `border` thickness
+
+**When to apply:**
+- Any visual UI feature (calendars, tables, cards)
+- User sees feature for first time
+- User provides specific feedback ("too large", "too small", "cluttered")
+
+---
+
 ## Summary Statistics
 
-**Total rules:** 11
+**Total rules:** 16
 **Categories:**
-- Data Validation: 2
-- Web Scraping: 5
-- Testing: 1
-- Repository Management: 1
-- Workflow: 2
+- Data Validation: 3 (venue city verification, weekend coverage, low event count validation)
+- Web Scraping: 9 (date prompts, infinite scroll, filtering, deferral, GoOut fallback, alternative sources, find_next(), ISO dates, UI iteration)
+- Testing: 1 (TDD workflow)
+- Repository Management: 1 (gitignore patterns)
+- Workflow: 2 (multi-level validation, documentation comments)
 
 **Most critical rules:**
-1. Always verify venue city via multiple sources
-2. Use keyword-based filtering for mixed-content venues
-3. Implement infinite scroll for lazy-loaded content
-4. Follow TDD workflow for all new scrapers
+1. Use alternative data sources when official websites unavailable (GoOut, Ticketportal)
+2. Always verify venue city via multiple sources
+3. Use keyword-based filtering for mixed-content venues
+4. Implement infinite scroll for lazy-loaded content
 5. Multi-level validation required before HTML generation
+6. Use find_next() for nested HTML structures
+7. Validate low event counts before flagging as errors

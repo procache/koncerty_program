@@ -656,3 +656,168 @@ Note: `test_o2_scrapers.py` is the real test suite and remains tracked
 - Document exclusion patterns with comments for future maintainability
 
 ---
+
+## Success: 95% Automation Milestone - 20/21 Venues Complete
+**Date:** 2025-10-25
+
+- **Context:** Final push to complete deferred venues using alternative data sources
+- **Result:** 20/21 venues (95.2%) fully automated, 326 total events collected
+
+### Venues Implemented (4 new)
+
+**1. Buena Vista Club (Plzeň)** - Playwright
+- **URL:** https://www.buenavista-club.cz/program
+- **Events:** 4 for November 2025
+- **HTML Structure:** Events in `div.post_item` containers with date, time, artist extraction
+- **Status:** GREEN (within 3-10 expected range)
+- **Commit:** `7f77c38`
+
+**2. Papírna Plzeň** - Playwright via GoOut
+- **URL:** https://goout.net/en/papirna-plzen/vztxao/events/
+- **Events:** 16 for November 2025
+- **Discovery:** Official website structure complex, GoOut provided reliable alternative
+- **Status:** GREEN
+- **Commit:** `dcb28cc`
+
+**3. U Staré Paní Jazz & Cocktail Club (Praha)** - Playwright via GoOut
+- **URL:** https://goout.net/en/u-stare-pani-jazz-and-cocktail-club/vzlll/events/
+- **Events:** 25 for November 2025
+- **Challenge:** Official website unreachable (ERR_CONNECTION_REFUSED from previous session)
+- **Solution:** GoOut.net used as alternative data source
+- **Parsing Pattern:** GoOut standard structure (div.event with time element)
+- **Status:** GREEN (exceeded 5-15 expected range)
+
+**4. Cross Club (Praha)** - Playwright (Simple Structure)
+- **URL:** https://www.crossclub.cz/cs/program/
+- **Events:** 1 for November 2025
+- **Previous Challenge:** Marked as "complex JavaScript calendar" in earlier attempt
+- **Discovery:** Actually has simple HTML structure `div.predel` → `h2`
+- **Debugging Lesson:** Used `find_next()` instead of `find_next_sibling()` due to nested div.article
+- **Note:** Low event count (1) is accurate for November 2025, not a scraping issue
+- **Status:** GREEN
+
+**5. Sportovní hala Fortuna (Tipsport Arena) (Praha)** - Playwright via Ticketportal
+- **URL:** https://www.ticketportal.cz/venue/TIPSPORT-ARENA
+- **Events:** 5 music events (filtered sports events)
+- **Challenge:** Original website had complex Splide carousel
+- **Solution:** User provided Ticketportal as official tickets source
+- **Data Format:** ISO 8601 timestamps in `div[itemprop="startDate"][content="2025-11-07T18:30"]`
+- **Sports Filtering:** Keywords (hokej, hockey, sparta, slavia, fotbal, extraliga, basket, volejbal)
+- **Status:** GREEN
+
+### Alternative Data Sources Pattern
+
+**GoOut.net Integration (3 venues):**
+- Watt Music Club (Plzeň)
+- Papírna Plzeň
+- U Staré Paní (Praha)
+
+**Ticketportal.cz Integration (1 venue):**
+- Tipsport Arena (Praha)
+
+### Technical Patterns Discovered
+
+**1. Cross Club HTML Traversal Issue**
+```python
+# WRONG: find_next_sibling() skips nested elements
+h2 = predel.find_next_sibling('h2')  # Returns None
+
+# CORRECT: find_next() traverses down the tree
+h2 = predel.find_next('h2')  # Finds h2 inside div.article
+```
+
+**2. ISO Date Parsing (Ticketportal)**
+```python
+# Extract from attribute, not text
+iso_date = date_div.get('content', '')  # "2025-11-07T18:30"
+dt = datetime.fromisoformat(iso_date)
+```
+
+**3. Sports Event Filtering**
+```python
+sports_keywords = ['hokej', 'hockey', 'sparta', 'slavia', 'fotbal',
+                   'football', 'extraliga', 'basket', 'volejbal']
+if any(kw in event_name.lower() for kw in sports_keywords):
+    continue  # Skip sports event
+```
+
+### Automated Status Update
+- **Venues automated:** 20/21 (95.2%)
+- **Total events:** 326
+- **Deferred venues:** 1 (Lucerna Velký sál - no November 2025 events found)
+- **Alternative data sources:** 4 venues (GoOut: 3, Ticketportal: 1)
+- **Coverage:** 30/30 days (100%)
+
+### Venue Distribution
+
+**Prague (15 venues automated):**
+O2 Arena, O2 Universum, Palác Akropolis, Rock Café, Lucerna Music Bar, Roxy, Vagon, Jazz Dock, Forum Karlín, MeetFactory, Malostranská beseda, Reduta Jazz Club, U Staré Paní, Cross Club, Tipsport Arena
+
+**Plzeň (5 venues automated):**
+Watt Music Club, Divadlo Pod lampou, Kulturní dům Šeříkovka, Buena Vista Club, Papírna Plzeň
+
+**Removed from scope (4 venues):**
+Dům hudby Plzeň, Moving Station, Měšťanská beseda, LOGSPEED CZ Aréna
+
+### 📏 Rules Added
+1. **Alternative data sources:** When official website is unavailable/complex, check GoOut.net or Ticketportal.cz
+2. **BeautifulSoup traversal:** Use `find_next()` for nested structures, not just `find_next_sibling()`
+3. **Low event counts:** Validate before flagging as error - some months naturally have fewer events
+4. **ISO date formats:** Use `datetime.fromisoformat()` for ISO 8601 timestamps
+
+---
+
+## Success: Interactive Calendar Feature
+**Date:** 2025-10-26
+
+- **Context:** User requested calendar widget for date-based filtering on HTML page
+- **Result:** Fully functional interactive calendar with combined filtering (date + city + search)
+
+### Implementation Details
+
+**Calendar Structure:**
+- Grid layout (7 columns for weekdays Po-Ne)
+- Auto-calculated first day of month (November 1, 2025 = Saturday)
+- Empty cells for alignment before first day
+- Visual indicator (blue dot) for days with events
+- Click to filter, click again to deselect
+- "Zobrazit všechny dny" button to clear date filter
+
+**CSS Styling:**
+- Compact size: max-width 400px (reduced from 800px on user request)
+- Gradient background on active day selection
+- Hover effects for interactivity feedback
+- Responsive design (mobile-friendly)
+
+**JavaScript Functionality:**
+```javascript
+// Combined filtering logic
+function filterEvents() {
+    const cityMatch = currentCity === 'all' || cardCity === currentCity;
+    const searchMatch = cardSearch.includes(currentSearch.toLowerCase());
+    const dayMatch = currentDay === null || cardDay === currentDay;
+
+    if (cityMatch && searchMatch && dayMatch) {
+        card.style.display = 'flex';
+    }
+}
+```
+
+**Data Attributes:**
+- Event cards: `data-day="{day}"` for filtering
+- Calendar days: `data-day="{day}"` for click handling
+- Calendar days with events: `class="has-events"` for visual indicator
+
+### User Feedback Integration
+- **First version:** Calendar too large (800px wide)
+- **Second version:** Reduced to 400px (one-third size) per user request
+- **Final result:** Compact, functional calendar that doesn't dominate page
+
+### Commits
+- `d6071d9`: Initial calendar feature implementation
+- `2d98f3d`: Reduced calendar size to one-third
+
+### 📏 Rule Added
+- **User feedback iteration:** When implementing UI features, be prepared to adjust sizing/spacing based on user preference after seeing initial implementation
+
+---
