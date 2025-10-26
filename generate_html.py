@@ -162,6 +162,108 @@ def generate_html(data):
             color: white;
         }}
 
+        .calendar-section {{
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }}
+
+        .calendar-title {{
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }}
+
+        .calendar-grid {{
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            max-width: 800px;
+            margin: 0 auto;
+        }}
+
+        .calendar-day-header {{
+            text-align: center;
+            font-weight: 600;
+            color: #6c757d;
+            padding: 10px;
+            font-size: 0.9rem;
+        }}
+
+        .calendar-day {{
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #2c3e50;
+            position: relative;
+        }}
+
+        .calendar-day:hover {{
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateY(-2px);
+        }}
+
+        .calendar-day.has-events::after {{
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            width: 6px;
+            height: 6px;
+            background: #667eea;
+            border-radius: 50%;
+        }}
+
+        .calendar-day.active {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }}
+
+        .calendar-day.active::after {{
+            background: white;
+        }}
+
+        .calendar-day.empty {{
+            background: transparent;
+            border: none;
+            cursor: default;
+        }}
+
+        .calendar-day.empty:hover {{
+            transform: none;
+        }}
+
+        .clear-date-filter {{
+            display: none;
+            margin: 20px auto 0;
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }}
+
+        .clear-date-filter:hover {{
+            background: #5a6268;
+        }}
+
+        .clear-date-filter.visible {{
+            display: block;
+        }}
+
         .events-container {{
             padding: 30px;
         }}
@@ -333,6 +435,45 @@ def generate_html(data):
             </div>
         </header>
 
+        <div class="calendar-section">
+            <div class="calendar-title">Vyberte datum</div>
+            <div class="calendar-grid">
+                <!-- Day headers -->
+                <div class="calendar-day-header">Po</div>
+                <div class="calendar-day-header">Út</div>
+                <div class="calendar-day-header">St</div>
+                <div class="calendar-day-header">Čt</div>
+                <div class="calendar-day-header">Pá</div>
+                <div class="calendar-day-header">So</div>
+                <div class="calendar-day-header">Ne</div>
+"""
+
+    # Calculate which day of week November 1st falls on (0=Monday, 6=Sunday)
+    from datetime import datetime
+    first_day = datetime(year, data['month'], 1)
+    start_weekday = first_day.weekday()  # 0=Monday, 6=Sunday
+
+    # Get total days in month (from config)
+    total_days = 30  # November has 30 days
+
+    # Collect which days have events
+    days_with_events = set()
+    for event in all_events:
+        days_with_events.add(event['day'])
+
+    # Add empty cells before the first day
+    for _ in range(start_weekday):
+        html += '                <div class="calendar-day empty"></div>\n'
+
+    # Add day cells
+    for day in range(1, total_days + 1):
+        has_events_class = 'has-events' if day in days_with_events else ''
+        html += f'                <div class="calendar-day {has_events_class}" data-day="{day}">{day}</div>\n'
+
+    html += """            </div>
+            <button class="clear-date-filter" id="clearDateFilter">Zobrazit všechny dny</button>
+        </div>
+
         <div class="controls">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Hledat kapelu, klub nebo místo...">
@@ -352,7 +493,7 @@ def generate_html(data):
         city_class = 'plzen' if event['city'] == 'Plzeň' else 'praha'
 
         html += f"""
-            <div class="event-card" data-city="{event['city']}" data-search="{event['artist'].lower()} {event['venue'].lower()} {event['city'].lower()}">
+            <div class="event-card" data-city="{event['city']}" data-day="{event['day']}" data-search="{event['artist'].lower()} {event['venue'].lower()} {event['city'].lower()}">
                 <div class="event-date">
                     <div class="event-day">{event['day']}</div>
                     <div class="event-month">{month_name}</div>
@@ -396,9 +537,12 @@ def generate_html(data):
         const noResults = document.getElementById('noResults');
         const eventCards = document.querySelectorAll('.event-card');
         const cityFilters = document.querySelectorAll('.city-filter');
+        const calendarDays = document.querySelectorAll('.calendar-day:not(.empty)');
+        const clearDateButton = document.getElementById('clearDateFilter');
 
         let currentCity = 'all';
         let currentSearch = '';
+        let currentDay = null;  // null means all days
 
         function filterEvents() {
             let visibleCount = 0;
@@ -406,11 +550,13 @@ def generate_html(data):
             eventCards.forEach(card => {
                 const cardCity = card.dataset.city;
                 const cardSearch = card.dataset.search;
+                const cardDay = parseInt(card.dataset.day);
 
                 const cityMatch = currentCity === 'all' || cardCity === currentCity;
                 const searchMatch = cardSearch.includes(currentSearch.toLowerCase());
+                const dayMatch = currentDay === null || cardDay === currentDay;
 
-                if (cityMatch && searchMatch) {
+                if (cityMatch && searchMatch && dayMatch) {
                     card.style.display = 'flex';
                     visibleCount++;
                 } else {
@@ -439,6 +585,36 @@ def generate_html(data):
                 currentCity = filter.dataset.city;
                 filterEvents();
             });
+        });
+
+        // Calendar day click
+        calendarDays.forEach(day => {
+            day.addEventListener('click', () => {
+                const clickedDay = parseInt(day.dataset.day);
+
+                if (currentDay === clickedDay) {
+                    // Clicking same day again = deselect
+                    currentDay = null;
+                    calendarDays.forEach(d => d.classList.remove('active'));
+                    clearDateButton.classList.remove('visible');
+                } else {
+                    // Select new day
+                    currentDay = clickedDay;
+                    calendarDays.forEach(d => d.classList.remove('active'));
+                    day.classList.add('active');
+                    clearDateButton.classList.add('visible');
+                }
+
+                filterEvents();
+            });
+        });
+
+        // Clear date filter button
+        clearDateButton.addEventListener('click', () => {
+            currentDay = null;
+            calendarDays.forEach(d => d.classList.remove('active'));
+            clearDateButton.classList.remove('visible');
+            filterEvents();
         });
     </script>
 </body>

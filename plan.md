@@ -38,6 +38,87 @@
 
 ---
 
+**Current Status - 20/21 FULLY AUTOMATED (95.2% complete):**
+- ✅ **O2 Arena** (7 events) - Playwright + Sports Filter - **AUTOMATED**
+- ✅ **O2 Universum** (8 events) - Playwright - **AUTOMATED**
+- ✅ **Palác Akropolis** (29 events) - Beautiful Soup - **AUTOMATED**
+- ✅ **Rock Café** (23 events) - Playwright - **AUTOMATED**
+- ✅ **Lucerna Music Bar** (31 events) - Playwright - **AUTOMATED**
+- ✅ **Roxy** (25 events) - Playwright - **AUTOMATED**
+- ✅ **Vagon** (26 events) - Playwright - **AUTOMATED**
+- ✅ **Jazz Dock** (20 events) - Playwright - **AUTOMATED**
+- ✅ **Forum Karlín** (6 events) - Playwright - **AUTOMATED**
+- ✅ **MeetFactory** (15 events) - Playwright + Infinite Scroll - **AUTOMATED**
+- ✅ **Malostranská beseda** (28 events) - Playwright - **AUTOMATED**
+- ✅ **Reduta Jazz Club** (30 events) - Playwright - **AUTOMATED**
+- ✅ **Watt Music Club** (3 events) - Playwright (GoOut) - **AUTOMATED**
+- ✅ **Divadlo Pod lampou** (15 events) - Playwright + Theatre Filter - **AUTOMATED**
+- ✅ **Kulturní dům Šeříkovka** (9 events) - Playwright + Non-Music Filter - **AUTOMATED**
+- ✅ **Buena Vista Club** (4 events) - Playwright - **AUTOMATED**
+- ✅ **Papírna Plzeň** (16 events) - Playwright (GoOut) - **AUTOMATED**
+- ✅ **U Staré Paní Jazz & Cocktail Club** (25 events) - Playwright (GoOut) - **AUTOMATED**
+- ✅ **Cross Club** (1 event) - Playwright - **AUTOMATED**
+- ✅ **Sportovní hala Fortuna (Tipsport Arena)** (5 events) - Playwright (Ticketportal) + Sports Filter - **AUTOMATED**
+
+**Total: 326 events from 20 venues**
+
+---
+
+**Priority 2: Deferred venues (retry with alternative approaches)** ✅ COMPLETE
+[x] Cross Club (8-20 expected) - Playwright ✅ 1 event (November 2025)
+[ ] Lucerna Velký sál (8-20 expected) - DEFERRED (no November 2025 events found)
+[x] U Staré Paní Jazz & Cocktail Club (5-15 expected) - Playwright via GoOut ✅ 25 events
+
+---
+
+### Phase 6: Testing & Validation (After All Venues Complete)
+[ ] Create test_scraper.py
+[ ] Test weekend coverage for large venues (min 2 events on Fri/Sat)
+[ ] Test URL validity (all URLs start with https://)
+[ ] Test date/time format validation
+[ ] Test retry/error logging
+[ ] Test full workflow end-to-end (scrape → validate → HTML)
+
+---
+
+### Phase 7: Documentation & Deployment
+[ ] Update README.md with usage instructions
+[ ] Document automation setup (cron job, scheduler)
+[ ] Document parser patterns in .claude/docs/parser-patterns.md
+[ ] Run `/doc` workflow to update experiment_log.md and rules-learned.md
+[ ] Final commit: "feat: complete automated concert scraper for 26 venues"
+
+---
+
+## Done
+
+### Completed Phases
+[x] Phase 1: Proof of Concept (Palác Akropolis)
+[x] Phase 2: Framework & Configuration
+[x] Phase 3: Playwright-based automation framework (11 venues completed)
+
+### Completed Venues (16/25 - 64% complete) ✅
+
+**Prague venues (12):**
+[x] O2 Arena - Playwright + Sports Filter (7 events) - **filters hockey/FMX**
+[x] O2 Universum - Playwright (8 events)
+[x] Palác Akropolis - Beautiful Soup (29 events)
+[x] Rock Café - Playwright (23 events)
+[x] Lucerna Music Bar - Playwright (31 events)
+[x] Roxy - Playwright (25 events)
+[x] Vagon - Playwright (26 events)
+[x] Jazz Dock - Playwright (20 events)
+[x] Forum Karlín - Playwright (6 events)
+[x] MeetFactory - Playwright + Infinite Scroll (15 events)
+[x] Malostranská beseda - Playwright (28 events)
+[x] Reduta Jazz Club - Playwright (30 events)
+
+**Plzeň venues (4):**
+[x] Watt Music Club - Playwright via GoOut (3 events)
+[x] Divadlo Pod lampou - Playwright + Theatre Filter (15 events)
+[x] Kulturní dům Šeříkovka - Playwright + Non-Music Filter (9 events)
+[x] Buena Vista Club - Playwright (4 events)
+
 ### Phase 1: Proof of Concept ✅ DONE
 [x] Analyze Palác Akropolis HTML structure (events in <td> elements)
 [x] Create scraper_akropolis.py with Beautiful Soup parser
@@ -98,32 +179,6 @@
 [x] Implement Tipsport Arena Playwright scraper via Ticketportal (5 events ✅)
 [x] Test full automated run: 20/21 venues without Claude ✅
 
-**Current Status - 20/21 FULLY AUTOMATED (95.2% complete):**
-- ✅ **O2 Arena** (7 events) - Playwright + Sports Filter - **AUTOMATED**
-- ✅ **O2 Universum** (8 events) - Playwright - **AUTOMATED**
-- ✅ **Palác Akropolis** (29 events) - Beautiful Soup - **AUTOMATED**
-- ✅ **Rock Café** (23 events) - Playwright - **AUTOMATED**
-- ✅ **Lucerna Music Bar** (31 events) - Playwright - **AUTOMATED**
-- ✅ **Roxy** (25 events) - Playwright - **AUTOMATED**
-- ✅ **Vagon** (26 events) - Playwright - **AUTOMATED**
-- ✅ **Jazz Dock** (20 events) - Playwright - **AUTOMATED**
-- ✅ **Forum Karlín** (6 events) - Playwright - **AUTOMATED**
-- ✅ **MeetFactory** (15 events) - Playwright + Infinite Scroll - **AUTOMATED**
-- ✅ **Malostranská beseda** (28 events) - Playwright - **AUTOMATED**
-- ✅ **Reduta Jazz Club** (30 events) - Playwright - **AUTOMATED**
-- ✅ **Watt Music Club** (3 events) - Playwright (GoOut) - **AUTOMATED**
-- ✅ **Divadlo Pod lampou** (15 events) - Playwright + Theatre Filter - **AUTOMATED**
-- ✅ **Kulturní dům Šeříkovka** (9 events) - Playwright + Non-Music Filter - **AUTOMATED**
-- ✅ **Buena Vista Club** (4 events) - Playwright - **AUTOMATED**
-- ✅ **Papírna Plzeň** (16 events) - Playwright (GoOut) - **AUTOMATED**
-- ✅ **U Staré Paní Jazz & Cocktail Club** (25 events) - Playwright (GoOut) - **AUTOMATED**
-- ✅ **Cross Club** (1 event) - Playwright - **AUTOMATED**
-- ✅ **Sportovní hala Fortuna (Tipsport Arena)** (5 events) - Playwright (Ticketportal) + Sports Filter - **AUTOMATED**
-
-**Total: 326 events from 20 venues**
-
----
-
 ### Phase 4: Complete All 21 Venues (GRADUAL IMPLEMENTATION) ✅ ALMOST COMPLETE
 
 **Target:** 300+ events from all 21 venues, fully automated ✅ **ACHIEVED: 326 events!**
@@ -152,11 +207,6 @@
 [x] O2 Universum (3-10 expected) - Playwright ✅ 8 events
 [x] Sportovní hala Fortuna (2-8 expected) - Playwright via Ticketportal ✅ 5 events
 
-**Priority 2: Deferred venues (retry with alternative approaches)** ✅ COMPLETE
-[x] Cross Club (8-20 expected) - Playwright ✅ 1 event (November 2025)
-[ ] Lucerna Velký sál (8-20 expected) - DEFERRED (no November 2025 events found)
-[x] U Staré Paní Jazz & Cocktail Club (5-15 expected) - Playwright via GoOut ✅ 25 events
-
 **Priority 3: Small Prague venues**
 _Note: This category is now empty - all venues were incorrectly listed as Praha, they are actually in Plzeň_
 [x] Divadlo Pod lampou - **MOVED to Plzeň venues** (was incorrectly listed as Praha)
@@ -167,7 +217,7 @@ _Note: This category is now empty - all venues were incorrectly listed as Praha,
 [x] Divadlo Pod lampou (0-5 expected) - primarily theatre, filters music - Playwright ✅ 15 events (was mislabeled as Praha)
 [x] Kulturní dům Šeříkovka (1-8 expected) - filters non-music - Playwright ✅ 9 events (was mislabeled as Praha)
 [x] Buena Vista Club (3-10 expected) - Playwright ✅ 4 events
-[ ] Papírna Plzeň (1-8 expected) - Playwright
+[x] Papírna Plzeň (1-8 expected) - Playwright
 
 ---
 
@@ -179,55 +229,5 @@ _Note: This category is now empty - all venues were incorrectly listed as Praha,
 [x] Add search functionality
 [x] Add responsive design with gradient background
 [x] Test HTML generation - program_listopad_2025.html created
-
----
-
-### Phase 6: Testing & Validation (After All Venues Complete)
-[ ] Create test_scraper.py
-[ ] Test weekend coverage for large venues (min 2 events on Fri/Sat)
-[ ] Test URL validity (all URLs start with https://)
-[ ] Test date/time format validation
-[ ] Test retry/error logging
-[ ] Test full workflow end-to-end (scrape → validate → HTML)
-
----
-
-### Phase 7: Documentation & Deployment
-[ ] Update README.md with usage instructions
-[ ] Document automation setup (cron job, scheduler)
-[ ] Document parser patterns in .claude/docs/parser-patterns.md
-[ ] Run `/doc` workflow to update experiment_log.md and rules-learned.md
-[ ] Final commit: "feat: complete automated concert scraper for 26 venues"
-
----
-
-## Done
-
-### Completed Phases
-[x] Phase 1: Proof of Concept (Palác Akropolis)
-[x] Phase 2: Framework & Configuration
-[x] Phase 3: Playwright-based automation framework (11 venues completed)
-
-### Completed Venues (16/25 - 64% complete) ✅
-
-**Prague venues (12):**
-[x] O2 Arena - Playwright + Sports Filter (7 events) - **filters hockey/FMX**
-[x] O2 Universum - Playwright (8 events)
-[x] Palác Akropolis - Beautiful Soup (29 events)
-[x] Rock Café - Playwright (23 events)
-[x] Lucerna Music Bar - Playwright (31 events)
-[x] Roxy - Playwright (25 events)
-[x] Vagon - Playwright (26 events)
-[x] Jazz Dock - Playwright (20 events)
-[x] Forum Karlín - Playwright (6 events)
-[x] MeetFactory - Playwright + Infinite Scroll (15 events)
-[x] Malostranská beseda - Playwright (28 events)
-[x] Reduta Jazz Club - Playwright (30 events)
-
-**Plzeň venues (4):**
-[x] Watt Music Club - Playwright via GoOut (3 events)
-[x] Divadlo Pod lampou - Playwright + Theatre Filter (15 events)
-[x] Kulturní dům Šeříkovka - Playwright + Non-Music Filter (9 events)
-[x] Buena Vista Club - Playwright (4 events)
 
 **Total: 278 events from 16 fully automated venues** 
