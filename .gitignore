@@ -28,6 +28,7 @@ fortuna.html
 meetfactory*.html
 malostranskabeseda*.html
 reduta*.html
+*_ticketportal.html
 
 # Log files
 scrape_output*.log
