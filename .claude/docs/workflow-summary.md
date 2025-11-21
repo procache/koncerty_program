@@ -10,6 +10,7 @@
 - **Action**: Fetch all clubs simultaneously (26 WebFetch calls in parallel)
 - **Config**: kluby.json defines URLs and expected ranges
 - **Prompt**: "Extract ALL music concerts for [month] [year]. List EVERY date 1-[days]."
+- **URL requirement**: "For each event, provide the direct event detail page URL (NOT the venue program page)"
 
 ### LEVEL 2: Global Analysis
 - **Action**: Create date×club matrix for entire month
@@ -22,11 +23,13 @@
 - actualEvents < min_akci * 0.5 → RED flag
 - Large venue missing weekends → YELLOW flag
 - Gap > 5 days for large venue → YELLOW flag
+- **URL quality:** Event URL = venue program page → YELLOW flag (use ticket_sources)
 
 ### LEVEL 4: Targeted Re-fetch
 - **Trigger**: YELLOW or RED flags from LEVEL 3
 - **Action**: Re-fetch with explicit date prompts
 - **Example**: "Show me ONLY events on November 27 and 28"
+- **URL fallback**: If venue has no event URLs, check `ticket_sources` from kluby.json
 
 ### LEVEL 5: Cross-validation
 - **Trigger**: Still suspicious after re-fetch
@@ -80,6 +83,31 @@ koncerty_program/
 │       ├── workflow-summary.md  ← This file
 │       └── ...
 ```
+
+---
+
+## URL Sources Configuration
+
+Some venues don't provide event-specific URLs. Use `ticket_sources` fallback:
+
+```json
+{
+  "nazev": "Buena Vista Club",
+  "url": "https://www.buenavistaclub.cz/program-klubu.aspx",
+  "ticket_sources": [
+    "https://www.smsticket.cz/misto/buena-vista-plzen",
+    "https://goout.net/cs/buena-vista-club/vzptfs/"
+  ]
+}
+```
+
+**URL priority (best to worst):**
+1. Venue's own event detail page
+2. Ticket platform (smsticket.cz, goout.net)
+3. Band's official concert page
+4. Event aggregator (kdykde.cz, bandzone.cz)
+5. Facebook event page
+6. ❌ NEVER: Generic venue program page
 
 ---
 
