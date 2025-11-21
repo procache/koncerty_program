@@ -1,157 +1,182 @@
-2025-10-23 16:42:05,033 - INFO - Concert Scraper Framework
-2025-10-23 16:42:05,033 - INFO - ============================================================
-2025-10-23 16:42:05,033 - INFO - Scraping concerts for listopad 2025 (month 11)
-2025-10-23 16:42:05,033 - INFO - Total venues: 26
-2025-10-23 16:42:05,035 - INFO - ============================================================
-2025-10-23 16:42:05,035 - WARNING - No scraper implemented for O2 Arena
-2025-10-23 16:42:05,035 - WARNING - No scraper implemented for O2 Universum
-2025-10-23 16:42:05,035 - WARNING - No scraper implemented for Sportovní hala Fortuna (Tipsport Arena)
-2025-10-23 16:42:06,426 - INFO - Forum Karlín: Using Playwright (automated)
-2025-10-23 16:42:06,426 - INFO - Scraping Forum Karlín for 11/2025...
-2025-10-23 16:42:09,746 - INFO - Opening browser for https://www.forumkarlin.cz/en/events/
-2025-10-23 16:42:11,988 - INFO - Waiting for selector: div[class*="event"]
-2025-10-23 16:42:12,378 - INFO - Successfully fetched 81739 chars of HTML
-2025-10-23 16:42:12,486 - INFO - Found 84 event divs
-2025-10-23 16:42:12,496 - INFO - Found 6 events
-2025-10-23 16:42:12,496 - INFO - Forum Karlín: 6 events (GREEN)
-2025-10-23 16:42:12,499 - INFO - Palác Akropolis: Using Beautiful Soup (static HTML)
-2025-10-23 16:42:12,499 - INFO - Fetching https://palacakropolis.cz
-2025-10-23 16:42:12,870 - INFO - Found 29 events
-2025-10-23 16:42:12,870 - INFO - Palác Akropolis: 29 events (GREEN)
-2025-10-23 16:42:12,870 - WARNING - No scraper implemented for Lucerna Velký sál
-2025-10-23 16:42:12,870 - INFO - Roxy: Using Playwright (automated)
-2025-10-23 16:42:12,870 - INFO - Scraping Roxy for 11/2025...
-2025-10-23 16:42:15,936 - INFO - Opening browser for https://www.roxy.cz/tickets/
-2025-10-23 16:42:39,184 - INFO - Waiting for selector: a.item[href*="/events/detail/"]
-2025-10-23 16:42:39,676 - INFO - Successfully fetched 89272 chars of HTML
-2025-10-23 16:42:39,850 - INFO - Found 25 events
-2025-10-23 16:42:39,850 - INFO - Roxy: 25 events (GREEN)
-2025-10-23 16:42:39,850 - INFO - MeetFactory: Using Playwright (automated)
-2025-10-23 16:42:39,850 - INFO - Scraping MeetFactory for 11/2025...
-2025-10-23 16:42:43,214 - INFO - Opening browser for https://meetfactory.cz/cs/program/hudba
-2025-10-23 16:42:49,269 - INFO - Waiting for initial event boxes
-2025-10-23 16:42:49,490 - INFO - Starting infinite scroll...
-2025-10-23 16:42:51,075 - INFO - Scroll 1: Found 20 event boxes
-2025-10-23 16:42:52,649 - INFO - Scroll 2: Found 30 event boxes
-2025-10-23 16:42:54,221 - INFO - Scroll 3: Found 40 event boxes
-2025-10-23 16:42:55,856 - INFO - Scroll 4: Found 41 event boxes
-2025-10-23 16:42:57,431 - INFO - Scroll 5: Found 41 event boxes
-2025-10-23 16:42:57,451 - INFO - Reached bottom after 5 scrolls
-2025-10-23 16:42:57,731 - INFO - Successfully fetched 149356 chars of HTML after scrolling
-2025-10-23 16:42:57,912 - INFO - Found 41 event boxes
-2025-10-23 16:42:57,912 - INFO - Found 15 events
-2025-10-23 16:42:57,912 - INFO - MeetFactory: 15 events (GREEN)
-2025-10-23 16:42:57,912 - INFO - Lucerna Music Bar: Using Playwright (automated)
-2025-10-23 16:42:57,912 - INFO - Scraping Lucerna Music Bar for 11/2025...
-2025-10-23 16:43:01,371 - INFO - Opening browser for https://musicbar.cz/en/program/
-2025-10-23 16:43:05,713 - INFO - Waiting for selector: a.program-item
-2025-10-23 16:43:06,025 - INFO - Successfully fetched 129450 chars of HTML
-2025-10-23 16:43:06,113 - INFO - Found 31 events
-2025-10-23 16:43:06,119 - INFO - Lucerna Music Bar: 31 events (GREEN)
-2025-10-23 16:43:06,119 - INFO - Rock Café: Using Playwright (automated)
-2025-10-23 16:43:06,119 - INFO - Scraping Rock Café for 11/2025...
-2025-10-23 16:43:08,801 - INFO - Opening browser for https://rockcafe.cz/en/program/
-2025-10-23 16:43:11,483 - INFO - Waiting for selector: a[href*="/en/program/"]
-2025-10-23 16:43:11,794 - INFO - Successfully fetched 110110 chars of HTML
-2025-10-23 16:43:11,922 - INFO - Found 23 events
-2025-10-23 16:43:11,922 - INFO - Rock Café: 23 events (GREEN)
-2025-10-23 16:43:11,922 - INFO - Vagon: Using Playwright (automated)
-2025-10-23 16:43:11,922 - INFO - Scraping Vagon for 11/2025...
-2025-10-23 16:43:14,659 - INFO - Opening browser for https://www.vagon.cz/next.php
-2025-10-23 16:43:16,192 - INFO - Waiting for selector: table.table
-2025-10-23 16:43:16,588 - INFO - Successfully fetched 16513 chars of HTML
-2025-10-23 16:43:16,626 - INFO - Found 26 events
-2025-10-23 16:43:16,626 - INFO - Vagon: 26 events (GREEN)
-2025-10-23 16:43:16,626 - INFO - Jazz Dock: Using Playwright (automated)
-2025-10-23 16:43:16,626 - INFO - Scraping Jazz Dock for 11/2025...
-2025-10-23 16:43:19,299 - INFO - Opening browser for https://www.jazzdock.cz/en/program/2025/11
-2025-10-23 16:43:24,429 - INFO - Waiting for selector: div.program-item
-2025-10-23 16:43:24,834 - INFO - Successfully fetched 178257 chars of HTML
-2025-10-23 16:43:25,008 - INFO - Found 20 program items
-2025-10-23 16:43:25,025 - INFO - Found 20 events
-2025-10-23 16:43:25,027 - INFO - Jazz Dock: 20 events (GREEN)
-2025-10-23 16:43:25,027 - WARNING - No scraper implemented for U Staré Paní Jazz & Cocktail Club
-2025-10-23 16:43:25,027 - WARNING - No scraper implemented for Reduta Jazz Club
-2025-10-23 16:43:25,027 - INFO - Malostranská beseda: Using Playwright (automated)
-2025-10-23 16:43:25,029 - INFO - Scraping Malostranská beseda for 11/2025...
-2025-10-23 16:43:27,685 - INFO - Opening browser for https://www.malostranska-beseda.cz/club/program?year=2025&month=11
-2025-10-23 16:43:30,190 - INFO - Waiting for selector: div.row
-2025-10-23 16:43:30,456 - INFO - Successfully fetched 87055 chars of HTML
-2025-10-23 16:43:30,542 - INFO - Found 36 row divs
-2025-10-23 16:43:30,566 - INFO - Found 28 events
-2025-10-23 16:43:30,566 - INFO - Malostranská beseda: 28 events (GREEN)
-2025-10-23 16:43:30,566 - WARNING - No scraper implemented for Cross Club
-2025-10-23 16:43:30,566 - WARNING - No scraper implemented for Watt Music Club
-2025-10-23 16:43:30,566 - WARNING - No scraper implemented for Buena Vista Club
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for Divadlo Pod lampou
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for Kulturní d\u016fm Še\u0159íkovka
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for Kulturní d\u016fm JAS
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for D\u016fm hudby Plze\u0148
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for Moving Station
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for Papírna Plze\u0148
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for M\u011bš\u0165anská beseda
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for LOGSPEED CZ Aréna (Home Monitoring Aréna)
-2025-10-23 16:43:30,567 - INFO - 
-Retrying 17 failed venues...
-2025-10-23 16:43:30,567 - INFO - Retry: O2 Arena
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for O2 Arena
-2025-10-23 16:43:30,567 - ERROR -   Failed twice: O2 Arena - No scraper for O2 Arena
-2025-10-23 16:43:30,567 - INFO - Retry: O2 Universum
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for O2 Universum
-2025-10-23 16:43:30,567 - ERROR -   Failed twice: O2 Universum - No scraper for O2 Universum
-2025-10-23 16:43:30,567 - INFO - Retry: Sportovní hala Fortuna (Tipsport Arena)
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for Sportovní hala Fortuna (Tipsport Arena)
-2025-10-23 16:43:30,567 - ERROR -   Failed twice: Sportovní hala Fortuna (Tipsport Arena) - No scraper for Sportovní hala Fortuna (Tipsport Arena)
-2025-10-23 16:43:30,567 - INFO - Retry: Lucerna Velký sál
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for Lucerna Velký sál
-2025-10-23 16:43:30,567 - ERROR -   Failed twice: Lucerna Velký sál - No scraper for Lucerna Velký sál
-2025-10-23 16:43:30,567 - INFO - Retry: U Staré Paní Jazz & Cocktail Club
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for U Staré Paní Jazz & Cocktail Club
-2025-10-23 16:43:30,567 - ERROR -   Failed twice: U Staré Paní Jazz & Cocktail Club - No scraper for U Staré Paní Jazz & Cocktail Club
-2025-10-23 16:43:30,567 - INFO - Retry: Reduta Jazz Club
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for Reduta Jazz Club
-2025-10-23 16:43:30,567 - ERROR -   Failed twice: Reduta Jazz Club - No scraper for Reduta Jazz Club
-2025-10-23 16:43:30,567 - INFO - Retry: Cross Club
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for Cross Club
-2025-10-23 16:43:30,567 - ERROR -   Failed twice: Cross Club - No scraper for Cross Club
-2025-10-23 16:43:30,567 - INFO - Retry: Watt Music Club
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for Watt Music Club
-2025-10-23 16:43:30,567 - ERROR -   Failed twice: Watt Music Club - No scraper for Watt Music Club
-2025-10-23 16:43:30,567 - INFO - Retry: Buena Vista Club
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for Buena Vista Club
-2025-10-23 16:43:30,567 - ERROR -   Failed twice: Buena Vista Club - No scraper for Buena Vista Club
-2025-10-23 16:43:30,567 - INFO - Retry: Divadlo Pod lampou
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for Divadlo Pod lampou
-2025-10-23 16:43:30,567 - ERROR -   Failed twice: Divadlo Pod lampou - No scraper for Divadlo Pod lampou
-2025-10-23 16:43:30,567 - INFO - Retry: Kulturní d\u016fm Še\u0159íkovka
-2025-10-23 16:43:30,567 - WARNING - No scraper implemented for Kulturní d\u016fm Še\u0159íkovka
-2025-10-23 16:43:30,567 - ERROR -   Failed twice: Kulturní d\u016fm Še\u0159íkovka - No scraper for Kulturní d\u016fm Še\u0159íkovka
-2025-10-23 16:43:30,567 - INFO - Retry: Kulturní d\u016fm JAS
-2025-10-23 16:43:30,573 - WARNING - No scraper implemented for Kulturní d\u016fm JAS
-2025-10-23 16:43:30,573 - ERROR -   Failed twice: Kulturní d\u016fm JAS - No scraper for Kulturní d\u016fm JAS
-2025-10-23 16:43:30,573 - INFO - Retry: D\u016fm hudby Plze\u0148
-2025-10-23 16:43:30,573 - WARNING - No scraper implemented for D\u016fm hudby Plze\u0148
-2025-10-23 16:43:30,573 - ERROR -   Failed twice: D\u016fm hudby Plze\u0148 - No scraper for D\u016fm hudby Plze\u0148
-2025-10-23 16:43:30,573 - INFO - Retry: Moving Station
-2025-10-23 16:43:30,573 - WARNING - No scraper implemented for Moving Station
-2025-10-23 16:43:30,573 - ERROR -   Failed twice: Moving Station - No scraper for Moving Station
-2025-10-23 16:43:30,573 - INFO - Retry: Papírna Plze\u0148
-2025-10-23 16:43:30,573 - WARNING - No scraper implemented for Papírna Plze\u0148
-2025-10-23 16:43:30,573 - ERROR -   Failed twice: Papírna Plze\u0148 - No scraper for Papírna Plze\u0148
-2025-10-23 16:43:30,573 - INFO - Retry: M\u011bš\u0165anská beseda
-2025-10-23 16:43:30,573 - WARNING - No scraper implemented for M\u011bš\u0165anská beseda
-2025-10-23 16:43:30,573 - ERROR -   Failed twice: M\u011bš\u0165anská beseda - No scraper for M\u011bš\u0165anská beseda
-2025-10-23 16:43:30,573 - INFO - Retry: LOGSPEED CZ Aréna (Home Monitoring Aréna)
-2025-10-23 16:43:30,573 - WARNING - No scraper implemented for LOGSPEED CZ Aréna (Home Monitoring Aréna)
-2025-10-23 16:43:30,573 - ERROR -   Failed twice: LOGSPEED CZ Aréna (Home Monitoring Aréna) - No scraper for LOGSPEED CZ Aréna (Home Monitoring Aréna)
-2025-10-23 16:43:30,573 - INFO - 
+2025-10-25 12:51:07,830 - INFO - Concert Scraper Framework
+2025-10-25 12:51:07,830 - INFO - ============================================================
+2025-10-25 12:51:07,855 - INFO - Scraping concerts for listopad 2025 (month 11)
+2025-10-25 12:51:07,855 - INFO - Total venues: 26
+2025-10-25 12:51:07,855 - INFO - ============================================================
+2025-10-25 12:51:09,546 - INFO - O2 Arena: Using Playwright (automated, filters sports)
+2025-10-25 12:51:09,546 - INFO - Scraping O2 Arena for 11/2025...
+2025-10-25 12:51:12,628 - INFO - Opening browser for https://www.o2arena.cz/en/events/
+2025-10-25 12:51:17,023 - INFO - Waiting for selector: div.event_preview
+2025-10-25 12:51:17,308 - INFO - Successfully fetched 139321 chars of HTML
+2025-10-25 12:51:17,415 - INFO - Found 89 event divs on page
+2025-10-25 12:51:17,418 - INFO - Found 7 music events for 11/2025 (filtered out 1 sports events)
+2025-10-25 12:51:17,418 - INFO - O2 Arena: 7 events (GREEN)
+2025-10-25 12:51:17,419 - INFO - O2 Universum: Using Playwright (automated)
+2025-10-25 12:51:17,419 - INFO - Scraping O2 Universum for 11/2025...
+2025-10-25 12:51:19,759 - INFO - Opening browser for https://www.o2universum.cz/en/events/
+2025-10-25 12:51:23,914 - INFO - Waiting for selector: div.event_preview
+2025-10-25 12:51:24,147 - INFO - Successfully fetched 126255 chars of HTML
+2025-10-25 12:51:24,244 - INFO - Found 89 event divs on page
+2025-10-25 12:51:24,252 - INFO - Found 8 events for 11/2025
+2025-10-25 12:51:24,252 - INFO - O2 Universum: 8 events (GREEN)
+2025-10-25 12:51:24,254 - WARNING - No scraper implemented for Sportovní hala Fortuna (Tipsport Arena)
+2025-10-25 12:51:24,255 - INFO - Forum Karlín: Using Playwright (automated)
+2025-10-25 12:51:24,255 - INFO - Scraping Forum Karlín for 11/2025...
+2025-10-25 12:51:26,703 - INFO - Opening browser for https://www.forumkarlin.cz/en/events/
+2025-10-25 12:51:31,329 - INFO - Waiting for selector: div[class*="event"]
+2025-10-25 12:51:31,549 - INFO - Successfully fetched 82083 chars of HTML
+2025-10-25 12:51:31,628 - INFO - Found 84 event divs
+2025-10-25 12:51:31,628 - INFO - Found 6 events
+2025-10-25 12:51:31,628 - INFO - Forum Karlín: 6 events (GREEN)
+2025-10-25 12:51:31,628 - INFO - Palác Akropolis: Using Beautiful Soup (static HTML)
+2025-10-25 12:51:31,628 - INFO - Fetching https://palacakropolis.cz
+2025-10-25 12:51:31,794 - INFO - Found 29 events
+2025-10-25 12:51:31,794 - INFO - Palác Akropolis: 29 events (GREEN)
+2025-10-25 12:51:31,794 - WARNING - No scraper implemented for Lucerna Velký sál
+2025-10-25 12:51:31,794 - INFO - Roxy: Using Playwright (automated)
+2025-10-25 12:51:31,795 - INFO - Scraping Roxy for 11/2025...
+2025-10-25 12:51:33,743 - INFO - Opening browser for https://www.roxy.cz/tickets/
+2025-10-25 12:51:56,279 - INFO - Waiting for selector: a.item[href*="/events/detail/"]
+2025-10-25 12:51:56,690 - INFO - Successfully fetched 88664 chars of HTML
+2025-10-25 12:51:56,888 - INFO - Found 24 events
+2025-10-25 12:51:56,888 - INFO - Roxy: 24 events (GREEN)
+2025-10-25 12:51:56,888 - INFO - MeetFactory: Using Playwright (automated)
+2025-10-25 12:51:56,888 - INFO - Scraping MeetFactory for 11/2025...
+2025-10-25 12:52:00,569 - INFO - Opening browser for https://meetfactory.cz/cs/program/hudba
+2025-10-25 12:52:03,720 - INFO - Waiting for initial event boxes
+2025-10-25 12:52:03,796 - INFO - Starting infinite scroll...
+2025-10-25 12:52:05,343 - INFO - Scroll 1: Found 20 event boxes
+2025-10-25 12:52:06,878 - INFO - Scroll 2: Found 30 event boxes
+2025-10-25 12:52:08,412 - INFO - Scroll 3: Found 39 event boxes
+2025-10-25 12:52:09,948 - INFO - Scroll 4: Found 39 event boxes
+2025-10-25 12:52:09,959 - INFO - Reached bottom after 4 scrolls
+2025-10-25 12:52:10,140 - INFO - Successfully fetched 143088 chars of HTML after scrolling
+2025-10-25 12:52:10,275 - INFO - Found 39 event boxes
+2025-10-25 12:52:10,281 - INFO - Found 15 events
+2025-10-25 12:52:10,282 - INFO - MeetFactory: 15 events (GREEN)
+2025-10-25 12:52:10,282 - INFO - Lucerna Music Bar: Using Playwright (automated)
+2025-10-25 12:52:10,282 - INFO - Scraping Lucerna Music Bar for 11/2025...
+2025-10-25 12:52:13,411 - INFO - Opening browser for https://musicbar.cz/en/program/
+2025-10-25 12:52:17,038 - INFO - Waiting for selector: a.program-item
+2025-10-25 12:52:18,122 - INFO - Successfully fetched 129372 chars of HTML
+2025-10-25 12:52:18,372 - INFO - Found 31 events
+2025-10-25 12:52:18,373 - INFO - Lucerna Music Bar: 31 events (GREEN)
+2025-10-25 12:52:18,373 - INFO - Rock Café: Using Playwright (automated)
+2025-10-25 12:52:18,373 - INFO - Scraping Rock Café for 11/2025...
+2025-10-25 12:52:21,121 - INFO - Opening browser for https://rockcafe.cz/en/program/
+2025-10-25 12:52:23,898 - INFO - Waiting for selector: a[href*="/en/program/"]
+2025-10-25 12:52:24,249 - INFO - Successfully fetched 108749 chars of HTML
+2025-10-25 12:52:24,419 - INFO - Found 23 events
+2025-10-25 12:52:24,420 - INFO - Rock Café: 23 events (GREEN)
+2025-10-25 12:52:24,420 - INFO - Vagon: Using Playwright (automated)
+2025-10-25 12:52:24,420 - INFO - Scraping Vagon for 11/2025...
+2025-10-25 12:52:26,636 - INFO - Opening browser for https://www.vagon.cz/next.php
+2025-10-25 12:52:27,889 - INFO - Waiting for selector: table.table
+2025-10-25 12:52:28,117 - INFO - Successfully fetched 16513 chars of HTML
+2025-10-25 12:52:28,194 - INFO - Found 26 events
+2025-10-25 12:52:28,194 - INFO - Vagon: 26 events (GREEN)
+2025-10-25 12:52:28,194 - INFO - Jazz Dock: Using Playwright (automated)
+2025-10-25 12:52:28,194 - INFO - Scraping Jazz Dock for 11/2025...
+2025-10-25 12:52:30,414 - INFO - Opening browser for https://www.jazzdock.cz/en/program/2025/11
+2025-10-25 12:52:34,092 - INFO - Waiting for selector: div.program-item
+2025-10-25 12:52:34,298 - INFO - Successfully fetched 178253 chars of HTML
+2025-10-25 12:52:34,494 - INFO - Found 20 program items
+2025-10-25 12:52:34,494 - INFO - Found 20 events
+2025-10-25 12:52:34,494 - INFO - Jazz Dock: 20 events (GREEN)
+2025-10-25 12:52:34,494 - WARNING - No scraper implemented for U Staré Paní Jazz & Cocktail Club
+2025-10-25 12:52:34,494 - INFO - Reduta Jazz Club: Using Playwright (automated)
+2025-10-25 12:52:34,494 - INFO - Scraping Reduta Jazz Club for 11/2025...
+2025-10-25 12:52:36,579 - INFO - Opening browser for https://www.redutajazzclub.cz/program-cs/112025
+2025-10-25 12:52:42,253 - INFO - Waiting for selector: td[data-link]
+2025-10-25 12:52:42,634 - INFO - Successfully fetched 855571 chars of HTML
+2025-10-25 12:52:43,033 - INFO - Found 30 event cells
+2025-10-25 12:52:43,058 - INFO - Found 30 events
+2025-10-25 12:52:43,058 - INFO - Reduta Jazz Club: 30 events (GREEN)
+2025-10-25 12:52:43,058 - INFO - Malostranská beseda: Using Playwright (automated)
+2025-10-25 12:52:43,058 - INFO - Scraping Malostranská beseda for 11/2025...
+2025-10-25 12:52:45,140 - INFO - Opening browser for https://www.malostranska-beseda.cz/club/program?year=2025&month=11
+2025-10-25 12:52:47,137 - INFO - Waiting for selector: div.row
+2025-10-25 12:52:47,361 - INFO - Successfully fetched 87103 chars of HTML
+2025-10-25 12:52:47,466 - INFO - Found 36 row divs
+2025-10-25 12:52:47,488 - INFO - Found 28 events
+2025-10-25 12:52:47,488 - INFO - Malostranská beseda: 28 events (GREEN)
+2025-10-25 12:52:47,488 - WARNING - No scraper implemented for Cross Club
+2025-10-25 12:52:47,488 - INFO - Watt Music Club: Using Playwright (automated)
+2025-10-25 12:52:47,488 - INFO - Scraping Watt Music Club for 11/2025...
+2025-10-25 12:52:49,586 - INFO - Opening browser for https://goout.net/en/watt-music-club/vztpab/events/
+2025-10-25 12:52:52,659 - INFO - Waiting for selector: div.event
+2025-10-25 12:52:52,924 - INFO - Successfully fetched 242456 chars of HTML
+2025-10-25 12:52:53,010 - INFO - Found 4 event divs on page
+2025-10-25 12:52:53,011 - INFO - Found 3 events for 11/2025
+2025-10-25 12:52:53,011 - INFO - Watt Music Club: 3 events (GREEN)
+2025-10-25 12:52:53,011 - WARNING - No scraper implemented for Buena Vista Club
+2025-10-25 12:52:53,011 - INFO - Divadlo Pod lampou: Using Playwright (automated, filters theatre)
+2025-10-25 12:52:53,011 - INFO - Scraping Divadlo Pod lampou for 11/2025...
+2025-10-25 12:52:55,309 - INFO - Opening browser for https://podlampou.cz/events/
+2025-10-25 12:52:57,195 - INFO - Waiting for selector: a.list-item
+2025-10-25 12:52:57,391 - INFO - Successfully fetched 29300 chars of HTML
+2025-10-25 12:52:57,430 - INFO - Found 33 total event items
+2025-10-25 12:52:57,447 - INFO - Found 16 music events for 11/2025
+2025-10-25 12:52:57,447 - INFO - Divadlo Pod lampou: 16 events (GREEN)
+2025-10-25 12:52:57,447 - INFO - Kulturní d\u016fm Še\u0159íkovka: Using Playwright (automated, filters non-music)
+2025-10-25 12:52:57,447 - INFO - Scraping Kulturní d\u016fm Še\u0159íkovka for 11/2025...
+2025-10-25 12:52:59,488 - INFO - Opening browser for https://www.serikovka.cz/
+2025-10-25 12:53:05,856 - INFO - Successfully fetched 95826 chars of HTML
+2025-10-25 12:53:05,912 - INFO - Found 29 total article items
+2025-10-25 12:53:05,914 - INFO - Found 9 music events for 11/2025
+2025-10-25 12:53:05,948 - INFO - Kulturní d\u016fm Še\u0159íkovka: 9 events (GREEN)
+2025-10-25 12:53:05,948 - INFO - Kulturní d\u016fm JAS: Using Playwright via GoOut (automated)
+2025-10-25 12:53:05,948 - INFO - Scraping Kulturní d\u016fm JAS for 11/2025...
+2025-10-25 12:53:08,036 - INFO - Opening browser for https://goout.net/en/kd-jas/vzvtab/events/
+2025-10-25 12:53:14,210 - INFO - Successfully fetched 230445 chars of HTML
+2025-10-25 12:53:14,355 - INFO - Found 0 event divs on page
+2025-10-25 12:53:14,355 - INFO - Found 0 events for 11/2025
+2025-10-25 12:53:14,355 - INFO - Kulturní d\u016fm JAS: 0 events (RED)
+2025-10-25 12:53:14,355 - WARNING - No scraper implemented for D\u016fm hudby Plze\u0148
+2025-10-25 12:53:14,357 - WARNING - No scraper implemented for Moving Station
+2025-10-25 12:53:14,357 - WARNING - No scraper implemented for Papírna Plze\u0148
+2025-10-25 12:53:14,357 - WARNING - No scraper implemented for M\u011bš\u0165anská beseda
+2025-10-25 12:53:14,357 - WARNING - No scraper implemented for LOGSPEED CZ Aréna (Home Monitoring Aréna)
+2025-10-25 12:53:14,357 - INFO - 
+Retrying 10 failed venues...
+2025-10-25 12:53:14,357 - INFO - Retry: Sportovní hala Fortuna (Tipsport Arena)
+2025-10-25 12:53:14,357 - WARNING - No scraper implemented for Sportovní hala Fortuna (Tipsport Arena)
+2025-10-25 12:53:14,357 - ERROR -   Failed twice: Sportovní hala Fortuna (Tipsport Arena) - No scraper for Sportovní hala Fortuna (Tipsport Arena)
+2025-10-25 12:53:14,357 - INFO - Retry: Lucerna Velký sál
+2025-10-25 12:53:14,357 - WARNING - No scraper implemented for Lucerna Velký sál
+2025-10-25 12:53:14,359 - ERROR -   Failed twice: Lucerna Velký sál - No scraper for Lucerna Velký sál
+2025-10-25 12:53:14,359 - INFO - Retry: U Staré Paní Jazz & Cocktail Club
+2025-10-25 12:53:14,359 - WARNING - No scraper implemented for U Staré Paní Jazz & Cocktail Club
+2025-10-25 12:53:14,359 - ERROR -   Failed twice: U Staré Paní Jazz & Cocktail Club - No scraper for U Staré Paní Jazz & Cocktail Club
+2025-10-25 12:53:14,359 - INFO - Retry: Cross Club
+2025-10-25 12:53:14,359 - WARNING - No scraper implemented for Cross Club
+2025-10-25 12:53:14,359 - ERROR -   Failed twice: Cross Club - No scraper for Cross Club
+2025-10-25 12:53:14,359 - INFO - Retry: Buena Vista Club
+2025-10-25 12:53:14,359 - WARNING - No scraper implemented for Buena Vista Club
+2025-10-25 12:53:14,360 - ERROR -   Failed twice: Buena Vista Club - No scraper for Buena Vista Club
+2025-10-25 12:53:14,360 - INFO - Retry: D\u016fm hudby Plze\u0148
+2025-10-25 12:53:14,360 - WARNING - No scraper implemented for D\u016fm hudby Plze\u0148
+2025-10-25 12:53:14,360 - ERROR -   Failed twice: D\u016fm hudby Plze\u0148 - No scraper for D\u016fm hudby Plze\u0148
+2025-10-25 12:53:14,360 - INFO - Retry: Moving Station
+2025-10-25 12:53:14,360 - WARNING - No scraper implemented for Moving Station
+2025-10-25 12:53:14,360 - ERROR -   Failed twice: Moving Station - No scraper for Moving Station
+2025-10-25 12:53:14,360 - INFO - Retry: Papírna Plze\u0148
+2025-10-25 12:53:14,360 - WARNING - No scraper implemented for Papírna Plze\u0148
+2025-10-25 12:53:14,361 - ERROR -   Failed twice: Papírna Plze\u0148 - No scraper for Papírna Plze\u0148
+2025-10-25 12:53:14,361 - INFO - Retry: M\u011bš\u0165anská beseda
+2025-10-25 12:53:14,361 - WARNING - No scraper implemented for M\u011bš\u0165anská beseda
+2025-10-25 12:53:14,361 - ERROR -   Failed twice: M\u011bš\u0165anská beseda - No scraper for M\u011bš\u0165anská beseda
+2025-10-25 12:53:14,361 - INFO - Retry: LOGSPEED CZ Aréna (Home Monitoring Aréna)
+2025-10-25 12:53:14,361 - WARNING - No scraper implemented for LOGSPEED CZ Aréna (Home Monitoring Aréna)
+2025-10-25 12:53:14,361 - ERROR -   Failed twice: LOGSPEED CZ Aréna (Home Monitoring Aréna) - No scraper for LOGSPEED CZ Aréna (Home Monitoring Aréna)
+2025-10-25 12:53:14,362 - INFO - 
 ============================================================
-2025-10-23 16:43:30,573 - INFO - SCRAPING COMPLETE
-2025-10-23 16:43:30,573 - INFO - ============================================================
-2025-10-23 16:43:30,573 - INFO - Successful venues: 9/26
-2025-10-23 16:43:30,573 - INFO - Total events: 203
-2025-10-23 16:43:30,573 - INFO - Status: GREEN=9, YELLOW=0, RED=0
-2025-10-23 16:43:30,573 - INFO - ============================================================
-2025-10-23 16:43:30,594 - INFO - 
+2025-10-25 12:53:14,362 - INFO - SCRAPING COMPLETE
+2025-10-25 12:53:14,362 - INFO - ============================================================
+2025-10-25 12:53:14,362 - INFO - Successful venues: 16/26
+2025-10-25 12:53:14,362 - INFO - Total events: 275
+2025-10-25 12:53:14,362 - INFO - Status: GREEN=15, YELLOW=0, RED=1
+2025-10-25 12:53:14,362 - INFO - ============================================================
+2025-10-25 12:53:14,389 - INFO - 
 [OK] Saved to events_data.json
 Scraping Palác Akropolis for 11/2025...
