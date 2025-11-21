@@ -119,7 +119,13 @@
       "velikost": "stredni",
       "min_akci": 10,
       "max_akci": 25,
-      "vikend_akce_pravdepodobnost": 0.9
+      "vikend_akce_pravdepodobnost": 0.9,
+      "ticket_sources": [
+        "https://goout.net/en/vagon/vzqe/",
+        "https://bandzone.cz/klub/vagon",
+        "https://www.kdykde.cz/calendar/misto/cr/praha/vagon-club"
+      ],
+      "poznamka": "Web nemá permanentní event URL - hledat na goout.net, bandzone.cz nebo oficiální stránky kapel"
     },
     {
       "nazev": "Jazz Dock",
@@ -185,7 +191,12 @@
       "velikost": "maly",
       "min_akci": 3,
       "max_akci": 10,
-      "vikend_akce_pravdepodobnost": 0.5
+      "vikend_akce_pravdepodobnost": 0.5,
+      "ticket_sources": [
+        "https://www.smsticket.cz/misto/buena-vista-plzen",
+        "https://goout.net/cs/buena-vista-club/vzptfs/"
+      ],
+      "poznamka": "Web nemá event stránky - hledat konkrétní URL na smsticket.cz"
     },
     {
       "nazev": "Divadlo Pod lampou",
@@ -205,7 +216,10 @@
       "min_akci": 1,
       "max_akci": 8,
       "vikend_akce_pravdepodobnost": 0.4,
-      "poznamka": "Původně chybně uvedeno jako Praha"
+      "ticket_sources": [
+        "https://goout.net/cs/kd-serikovka/vzuwab/"
+      ],
+      "poznamka": "Původně chybně uvedeno jako Praha. Limitovaný web - hledat event URL na goout.net"
     },
     {
       "nazev": "Papírna Plzeň",

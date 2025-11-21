@@ -174,6 +174,45 @@ Validation: 215+ events, 30/30 days covered
 
 ---
 
+## Event URL Quality
+
+### Rule: Always provide event-specific URLs, not generic venue pages
+**Why:** Users clicking "Více info" expect to land on the specific event page with details, tickets, etc. Generic venue pages require additional navigation.
+
+**Problem venues (no native event URLs):**
+- **Buena Vista Club** - only has `/program-klubu.aspx` listing page
+- **Vagon** - events on Facebook, website has no permanent event URLs
+- **Šeříkovka** - limited website, events often only on FB
+
+**Solution - Use alternative ticket platforms:**
+```
+Primary source failed → Check smsticket.cz, goout.net, bandzone.cz
+```
+
+**Enforcement:**
+- During LEVEL 1 scraping: If venue URL doesn't yield event-specific links, search ticket platforms
+- kluby.json now includes `ticket_sources` array for fallback URLs
+- Prompt must explicitly request: "For each event, provide the direct event detail page URL (not the venue program page)"
+
+**URL quality check:**
+```javascript
+// BAD: Generic venue page
+"https://www.buenavistaclub.cz/program-klubu.aspx"
+
+// GOOD: Specific event page
+"https://www.smsticket.cz/vstupenky/62908-x-cover-buena-vista-plzen"
+```
+
+**Fallback hierarchy:**
+1. Venue's own event detail page (best)
+2. Ticket platform (smsticket.cz, goout.net) event page
+3. Band's official concert page (e.g., czechfloyd.cz/koncerty)
+4. Event aggregator (kdykde.cz, bandzone.cz)
+5. Facebook event page (last resort - stable links)
+6. NEVER: Generic venue program page or band's general FB page
+
+---
+
 ## Future Improvements
 
 ### Potential rules for next iterations:
