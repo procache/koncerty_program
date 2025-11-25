@@ -5,28 +5,7 @@
 
 ---
 
-## File Structure Overview
-
-This template creates the following structure when used:
-
-```
-
-YourProject/ ├── CLAUDE.md ← This file (copied from CLAUDE_SOLO.md) ├── experiment_log.md ← Create empty, logs failures/lessons ├── plan.md ← Optional: task planning file │ ├── .claude/ │ └── docs/ │ ├── documentation.md ← Copy from C:\Projects.claude\docs  
-│ ├── git.md ← Copy from C:\Projects.claude\docs  
-│ ├── tdd_workflow.md ← Copy from C:\Projects.claude\docs  
-│ ├── weekly_learning.md ← Copy from C:\Projects.claude\docs  
-│ ├── code-review.md ← Copy from C:\Projects.claude\docs  
-│ └── rules-learned.md ← Create empty, accumulates project rules │ └── [your project files]
-
-```
-
 ## Related Files
-
-**Core Workflows (Required):**
-
-- **Documentation:** @.claude/docs/documentation.md
-- **Git:** @.claude/docs/git.md
-- **Plan:** @plan.md
 
 **Project-Specific Documentation:**
 
@@ -36,23 +15,6 @@ YourProject/ ├── CLAUDE.md ← This file (copied from CLAUDE_SOLO.md) ├�
 - **Experiment Log:** @.claude/experiment_log.md
 
 ⚠️ **Memory Budget Reminder:** Keep the total size of all referenced and imported files **below ~100k characters** to ensure Claude loads them reliably. If exceeded, Claude may silently truncate important rules.
-
----
-## Plan.md Rules
-
-**Only if you're using plan.md for task management:**
-
-- Read `plan.md` first; pick the **top unchecked** item in **Now** section.
-- Follow **TDD (RED → GREEN → REFACTOR)** for that item.
-- Only when all tests pass, build is OK, and **git status is clean**, then:
-    1. Tick the item `[ ] → [x]` and move it to **Done** with:
-        - Commit hash (first 7 chars) and date
-        - Brief note if useful
-    2. Commit with Conventional Commit message referencing plan ID:
-        - `feat: implement X (PLAN-1)`
-    3. Run pre-push check and push if green.
-- Update `.claude/docs/*` **only at milestones**, not every task.
-- If task revealed a rule worth keeping, add to `.claude/docs/rules-learned.md`.
 
 ---
 
@@ -115,15 +77,18 @@ This is a web scraping project that uses Claude Code's WebFetch tool to collect 
 
 ```
 koncerty_program/
+├── CLAUDE.md                   # Main AI assistant documentation (this file)
+├── agents.md                   # Documentation for custom agents
+├── gemini.md                   # Documentation for Gemini AI
 ├── kluby.json                  # Config: 26 clubs + validation rules
-├── kluby.md                    # List of all venues
-├── plan.md                     # Task management
-├── program_listopad_2025_v2.html  # Generated output
-├── november_dates.md           # Date reference
+├── generate_html.py            # HTML generator script
+├── scrape_concerts.py          # Main concert scraper script
+├── requirements.txt            # Python dependencies
 ├── .claude/
-│   ├── CLAUDE.md               # This file - main project doc
 │   ├── experiment_log.md       # Raw failure/lesson log
 │   ├── rules-learned.md        # Extracted actionable rules
+│   ├── agents/
+│   │   └── docs-sync-validator.md  # Agent for doc sync
 │   ├── docs/
 │   │   ├── data-summary.md     # Data sources & metrics
 │   │   ├── workflow-summary.md # 6-level validation process
@@ -131,8 +96,25 @@ koncerty_program/
 │   │   └── git.md              # Git workflow
 │   └── commands/
 │       ├── plan.md             # /plan command
-│       └── doc.md              # /doc command (this workflow)
-└── [archived HTML files]       # Previous months
+│       └── doc.md              # /doc command
+├── archive/                    # Archived old scripts and documents
+│   ├── plan.md                 # Old task management file
+│   ├── kluby.md                # Old venue list
+│   ├── november_dates.md       # Old date reference
+│   └── [old scripts]           # Old generator/scraper scripts
+├── programy/                   # Generated HTML programs
+│   ├── index.html              # Current month program
+│   └── [monthly HTML files]    # Previous months
+├── scrapers/                   # Scraper modules
+│   ├── base_scraper.py         # Base scraper class
+│   ├── browser_scraper.py      # Browser-based scraper
+│   └── scraper_*.py            # Venue-specific scrapers
+├── tests/                      # Test scripts
+│   └── test_*.py               # Venue-specific tests
+├── debug_scripts/              # Debugging scripts per venue
+│   └── debug_*.py              # Venue-specific debug scripts
+├── data_raw/                   # Raw scraped data
+└── logs/                       # Execution logs
 ```
 
 ## Monthly Workflow
@@ -150,23 +132,25 @@ koncerty_program/
    }
    ```
 
-2. **Run `/plan` and execute:**
-   - Claude performs LEVEL 1-6 validation workflow
+2. **Data collection:**
+   - Claude performs LEVEL 1-6 validation workflow using WebFetch
    - See @.claude/docs/workflow-summary.md for details
+   - Collect events from all 26 venues
 
 3. **Review validation report:**
    - GREEN clubs: ✅ Complete data
    - YELLOW clubs: ⚠️ Review needed
    - RED clubs: 🚨 Fetch failures
 
-4. **Confirm and generate HTML:**
-   - Claude asks: "Pokračovat v generování HTML?"
-   - You say: "ano"
+4. **Generate HTML:**
+   - Run `python generate_html.py` to create program
+   - Output saved to `programy/` folder
 
 5. **Commit:**
    ```bash
    git add .
    git commit -m "feat: add december 2025 concert program"
+   git push origin main
    ```
 
 ## Key Rules (from rules-learned.md)
@@ -182,28 +166,45 @@ See @.claude/rules-learned.md for complete list.
 
 ## Development Commands
 
-This project doesn't use traditional build commands since it's web scraping:
+This project uses Python scripts for web scraping and HTML generation:
+
+### Main Scripts
+
+```bash
+# Generate HTML program from collected data
+python generate_html.py
+
+# Run concert scraper (if using Python-based scraping)
+python scrape_concerts.py
+
+# Run specific venue tests
+python tests/test_[venue_name].py
+
+# Run debug script for specific venue
+python debug_scripts/debug_[venue_name].py
+```
 
 ### Workflow Commands (Claude Code)
 
 ```bash
-/plan     # Shows plan.md, executes top unchecked item
-/doc      # Runs documentation workflow (this workflow)
+/agents   # Manage custom agents (e.g., docs-sync-validator)
+/doc      # Runs documentation workflow
 ```
 
-### Manual Commands (if needed)
+### Manual Operations
 
 ```bash
-# View HTML in browser
-start program_listopad_2025_v2.html
+# View HTML in browser (from programy/ folder)
+start programy/index.html
 
 # Edit configuration for next month
-# Edit kluby.json manually
+# Edit kluby.json manually (update config section)
 
 # Git operations
 git status
 git add .
 git commit -m "feat: add [month] [year] program"
+git push origin main
 ```
 
 ## Data Quality Metrics (November 2025)
