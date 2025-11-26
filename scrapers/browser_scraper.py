@@ -8,7 +8,7 @@ from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeo
 from bs4 import BeautifulSoup
 import re
 from typing import List, Dict, Optional
-from base_scraper import BaseScraper
+from .base_scraper import BaseScraper
 
 
 class BrowserScraper(BaseScraper):

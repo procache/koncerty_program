@@ -7,7 +7,7 @@ Scrapes concert data from Rock Café Prague.
 from bs4 import BeautifulSoup
 import re
 from typing import List, Dict, Optional
-from base_scraper import BaseScraper
+from .base_scraper import BaseScraper
 
 
 class RockCafeScraper(BaseScraper):

@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 import json
 import re
 from typing import List, Dict, Optional
-from base_scraper import BaseScraper
+from .base_scraper import BaseScraper
 
 
 class AkropolisScraper(BaseScraper):
