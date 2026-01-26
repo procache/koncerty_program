@@ -1,10 +1,10 @@
 {
   "config": {
-    "mesic": "prosinec",
-    "mesic_en": "December",
-    "rok": 2025,
-    "mesic_cislo": 12,
-    "pocet_dni": 31,
+    "mesic": "únor",
+    "mesic_en": "February",
+    "rok": 2026,
+    "mesic_cislo": 2,
+    "pocet_dni": 28,
     "validace": {
       "globalni_minimum_akci": 100,
       "dny_bez_akci_maximum": 0,
