@@ -6,7 +6,7 @@
     "mesic_cislo": 2,
     "pocet_dni": 28,
     "validace": {
-      "globalni_minimum_akci": 100,
+      "globalni_minimum_akci": 180,
       "dny_bez_akci_maximum": 0,
       "refetch_pokud_vikend_prazdny": true,
       "cross_validate_velke_kluby": true,
@@ -230,6 +230,52 @@
       "max_akci": 8,
       "vikend_akce_pravdepodobnost": 0.4,
       "poznamka": "Oficiální web nedostupný, data z GoOut"
+    },
+    {
+      "nazev": "Sono Centrum",
+      "url": "https://www.sono.cz/program/",
+      "mesto": "Brno",
+      "velikost": "velky",
+      "min_akci": 20,
+      "max_akci": 35,
+      "vikend_akce_pravdepodobnost": 0.9
+    },
+    {
+      "nazev": "Fléda",
+      "url": "https://www.fleda.cz/program/",
+      "mesto": "Brno",
+      "velikost": "velky",
+      "min_akci": 15,
+      "max_akci": 35,
+      "vikend_akce_pravdepodobnost": 0.9
+    },
+    {
+      "nazev": "Kabinet Múz",
+      "url": "https://www.kabinetmuz.cz/program",
+      "mesto": "Brno",
+      "velikost": "stredni",
+      "min_akci": 10,
+      "max_akci": 20,
+      "vikend_akce_pravdepodobnost": 0.8
+    },
+    {
+      "nazev": "Stará Pekárna",
+      "url": "https://www.starapekarna.cz/program",
+      "mesto": "Brno",
+      "velikost": "stredni",
+      "min_akci": 8,
+      "max_akci": 15,
+      "vikend_akce_pravdepodobnost": 0.8,
+      "poznamka": "Žádné dedikované event stránky - URL na rezervaci /rezervace/YYYY-MM-DD"
+    },
+    {
+      "nazev": "Melodka",
+      "url": "https://www.melodka.cz/",
+      "mesto": "Brno",
+      "velikost": "maly",
+      "min_akci": 5,
+      "max_akci": 12,
+      "vikend_akce_pravdepodobnost": 0.7
     }
   ]
 }

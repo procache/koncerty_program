@@ -4,7 +4,7 @@ HTML Generator for Concert Program
 Generates responsive HTML page from events_data.json
 
 Features:
-- City filtering (Praha/Plzeň)
+- City filtering (Praha/Plzeň/Brno)
 - Search functionality
 - Responsive design
 - Gradient background
@@ -40,13 +40,14 @@ def generate_html(data):
     # Count events by city
     praha_count = sum(1 for e in all_events if e['city'] == 'Praha')
     plzen_count = sum(1 for e in all_events if e['city'] == 'Plzeň')
+    brno_count = sum(1 for e in all_events if e['city'] == 'Brno')
 
     html = f"""<!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koncerty {month_name} {year} - Praha & Plzeň</title>
+    <title>Koncerty {month_name} {year} - Praha, Plzeň & Brno</title>
     <style>
         * {{
             margin: 0;
@@ -335,6 +336,12 @@ def generate_html(data):
             border: 1px solid #5a4a3d;
         }}
 
+        .event-city.brno {{
+            background: #2d4a3a;
+            color: #4aff9f;
+            border: 1px solid #3a5a4a;
+        }}
+
         .event-time {{
             margin-left: 10px;
         }}
@@ -414,7 +421,7 @@ def generate_html(data):
     <div class="container">
         <header>
             <h1>Koncerty {month_name} {year}</h1>
-            <div class="subtitle">Praha & Plzeň</div>
+            <div class="subtitle">Praha, Plzeň & Brno</div>
         </header>
 
         <div class="calendar-section">
@@ -464,6 +471,7 @@ def generate_html(data):
                 <button class="city-filter active" data-city="all">Všechny</button>
                 <button class="city-filter" data-city="Praha">Praha</button>
                 <button class="city-filter" data-city="Plzeň">Plzeň</button>
+                <button class="city-filter" data-city="Brno">Brno</button>
             </div>
         </div>
 
@@ -472,7 +480,12 @@ def generate_html(data):
 
     # Generate event cards
     for event in all_events:
-        city_class = 'plzen' if event['city'] == 'Plzeň' else 'praha'
+        if event['city'] == 'Plzeň':
+            city_class = 'plzen'
+        elif event['city'] == 'Brno':
+            city_class = 'brno'
+        else:
+            city_class = 'praha'
 
         html += f"""
             <div class="event-card" data-city="{event['city']}" data-day="{event['day']}" data-search="{event['artist'].lower()} {event['venue'].lower()} {event['city'].lower()}">
@@ -503,11 +516,16 @@ def generate_html(data):
         </div>
 
         <footer>
-            <p>Vygenerováno automaticky · Celkem 20 klubů</p>
+            <p>Vygenerováno automaticky · Celkem 25 klubů</p>
             <p style="margin-top: 5px; font-size: 0.9rem;">
-                O2 Arena · O2 Universum · Palác Akropolis · Rock Café · Lucerna Music Bar · Roxy · Vagon · Jazz Dock ·
-                Forum Karlín · MeetFactory · Malostranská beseda · Reduta Jazz Club · U Staré Paní · Cross Club ·
-                Tipsport Arena · Watt Music Club · Divadlo Pod lampou · KD Šeříkovka · Buena Vista Club · Papírna Plzeň
+                <strong>Praha:</strong> O2 Arena · O2 Universum · Palác Akropolis · Rock Café · Lucerna Music Bar · Roxy · Vagon · Jazz Dock ·
+                Forum Karlín · MeetFactory · Malostranská beseda · Reduta Jazz Club · U Staré Paní · Cross Club · Tipsport Arena
+            </p>
+            <p style="margin-top: 3px; font-size: 0.9rem;">
+                <strong>Plzeň:</strong> Watt Music Club · Divadlo Pod lampou · KD Šeříkovka · Buena Vista Club · Papírna Plzeň
+            </p>
+            <p style="margin-top: 3px; font-size: 0.9rem;">
+                <strong>Brno:</strong> Sono Centrum · Fléda · Kabinet Múz · Stará Pekárna · Melodka
             </p>
         </footer>
     </div>

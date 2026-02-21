@@ -233,6 +233,51 @@ def scrape_venue(venue: Dict, month: int, year: int) -> Tuple[List[Dict], Dict, 
             logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
             return events, validation, None
 
+        if venue_name == "Sono Centrum":
+            from scrapers.browser_scraper import SonoCentrumBrowserScraper
+            logger.info(f"{venue_name}: Using Playwright (automated)")
+            scraper = SonoCentrumBrowserScraper(month=month, year=year)
+            events = scraper.scrape()
+            validation = scraper.validate(min_events=min_events, max_events=max_events)
+            logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+            return events, validation, None
+
+        if venue_name == "Fléda":
+            from scrapers.browser_scraper import FledaBrowserScraper
+            logger.info(f"{venue_name}: Using Playwright (automated)")
+            scraper = FledaBrowserScraper(month=month, year=year)
+            events = scraper.scrape()
+            validation = scraper.validate(min_events=min_events, max_events=max_events)
+            logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+            return events, validation, None
+
+        if venue_name == "Kabinet Múz":
+            from scrapers.browser_scraper import KabinetMuzBrowserScraper
+            logger.info(f"{venue_name}: Using Playwright (automated)")
+            scraper = KabinetMuzBrowserScraper(month=month, year=year)
+            events = scraper.scrape()
+            validation = scraper.validate(min_events=min_events, max_events=max_events)
+            logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+            return events, validation, None
+
+        if venue_name == "Stará Pekárna":
+            from scrapers.browser_scraper import StaraPekarnaBrowserScraper
+            logger.info(f"{venue_name}: Using Playwright (automated)")
+            scraper = StaraPekarnaBrowserScraper(month=month, year=year)
+            events = scraper.scrape()
+            validation = scraper.validate(min_events=min_events, max_events=max_events)
+            logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+            return events, validation, None
+
+        if venue_name == "Melodka":
+            from scrapers.browser_scraper import MelodkaBrowserScraper
+            logger.info(f"{venue_name}: Using Playwright (automated)")
+            scraper = MelodkaBrowserScraper(month=month, year=year)
+            events = scraper.scrape()
+            validation = scraper.validate(min_events=min_events, max_events=max_events)
+            logger.info(f"{venue_name}: {validation['total_events']} events ({validation['status']})")
+            return events, validation, None
+
         # 2. Try Beautiful Soup scraper (static HTML) - AUTOMATED
         if venue_name == "Palác Akropolis":
             from scrapers.scraper_akropolis import AkropolisScraper

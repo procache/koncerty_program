@@ -2295,5 +2295,515 @@ class TipsportArenaBrowserScraper(BrowserScraper):
         return self.events
 
 
+CZECH_MONTHS = {
+    'leden': 1, 'únor': 2, 'březen': 3, 'duben': 4,
+    'květen': 5, 'červen': 6, 'červenec': 7, 'srpen': 8,
+    'září': 9, 'říjen': 10, 'listopad': 11, 'prosinec': 12
+}
+
+
+class SonoCentrumBrowserScraper(BrowserScraper):
+    """
+    Sono Centrum Brno scraper using Playwright
+    URL: https://www.sono.cz/program/
+    Structure: div.col-md-4[data-month][data-year] > div.event-item > a.link + div.txt > h2 + p.date
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://www.sono.cz/program/",
+            venue_name="Sono Centrum",
+            city="Brno",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Use domcontentloaded (not networkidle) - Sono has long-running connections"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=self.headless)
+                page = browser.new_page()
+                page.goto(self.url, wait_until='domcontentloaded', timeout=60000)
+                page.wait_for_timeout(2000)
+                html = page.content()
+                browser.close()
+                self.logger.info(f"Fetched {len(html)} chars")
+        except Exception as e:
+            self.logger.error(f"Failed to fetch {self.url}: {e}")
+            raise
+        return self.parse_html(html)
+
+    def parse_html(self, html: str) -> List[Dict]:
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Events are in div.col-md-4 with data-month and data-year attributes
+        event_containers = soup.find_all('div', class_='col-md-4',
+                                         attrs={'data-month': str(self.month),
+                                                'data-year': str(self.year)})
+
+        events = []
+        seen_urls = set()
+
+        for container in event_containers:
+            try:
+                # Get event URL from <a class="link">
+                link = container.find('a', class_='link')
+                if not link:
+                    continue
+
+                href = link.get('href', '')
+                url = href if href.startswith('http') else f"https://www.sono.cz{href}"
+
+                if url in seen_urls:
+                    continue
+
+                # Get artist from <h2> inside div.txt
+                txt_div = container.find('div', class_='txt')
+                if not txt_div:
+                    continue
+
+                h2 = txt_div.find('h2')
+                if not h2:
+                    continue
+
+                artist = h2.get_text(strip=True)
+                if not artist:
+                    continue
+
+                # Get date from <p class="date"> (format: DD.MM.YYYY)
+                date_p = txt_div.find('p', class_='date')
+                if not date_p:
+                    continue
+
+                date_text = date_p.get_text(strip=True)
+                date_match = re.search(r'(\d{1,2})\.(\d{1,2})\.(\d{4})', date_text)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+                month_num = int(date_match.group(2))
+                year_num = int(date_match.group(3))
+
+                if month_num != self.month or year_num != self.year:
+                    continue
+
+                seen_urls.add(url)
+
+                events.append({
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': "20:00",
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url,
+                    'status': None
+                })
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        self.events = sorted(events, key=lambda x: x['day'])
+        self.logger.info(f"Found {len(self.events)} events")
+        return self.events
+
+
+class FledaBrowserScraper(BrowserScraper):
+    """
+    Fléda Brno scraper using Playwright
+    URL: https://www.fleda.cz/program/
+    Static HTML: event links /event/ID/, date as Czech text "Sobota Únor 21"
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://www.fleda.cz/program/",
+            venue_name="Fléda",
+            city="Brno",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+        html = self.fetch_html_with_browser(wait_for_selector='a[href*="/event/"]')
+        return self.parse_html(html)
+
+    def parse_html(self, html: str) -> List[Dict]:
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Find all event links
+        event_links = soup.find_all('a', href=re.compile(r'/event/\d+/'))
+        self.logger.info(f"Found {len(event_links)} event links")
+
+        events = []
+        seen_urls = set()
+
+        for link in event_links:
+            try:
+                href = link.get('href', '')
+                url = f"https://www.fleda.cz{href}" if href.startswith('/') else href
+
+                if url in seen_urls:
+                    continue
+
+                # Get text from link and its parent container
+                container = link.parent if link.parent else link
+                text = container.get_text(separator=' ', strip=True)
+
+                # Find Czech month name -> month number
+                month_num = None
+                matched_month_name = None
+                for mname, num in CZECH_MONTHS.items():
+                    if mname in text.lower():
+                        month_num = num
+                        matched_month_name = mname
+                        break
+
+                if month_num != self.month:
+                    continue
+
+                # Extract day: number after month name pattern "Únor 21"
+                day = None
+                if matched_month_name:
+                    m = re.search(rf'{matched_month_name}\s+(\d{{1,2}})', text, re.I)
+                    if m:
+                        day = int(m.group(1))
+
+                if not day:
+                    # Fallback: last standalone 1-2 digit number that could be a day
+                    candidates = re.findall(r'\b(\d{1,2})\b', text)
+                    day_candidates = [int(n) for n in candidates if 1 <= int(n) <= 31]
+                    if day_candidates:
+                        day = day_candidates[-1]
+
+                if not day or day < 1 or day > 31:
+                    continue
+
+                # Extract start time: "start: **20:00**" or "start: 20:00"
+                time_match = re.search(r'start:\s*\**(\d{1,2}):(\d{2})', text, re.I)
+                time_str = f"{time_match.group(1)}:{time_match.group(2)}" if time_match else "20:00"
+
+                # Extract artist: prefer heading tags inside container
+                artist = ""
+                for tag in container.find_all(['h1', 'h2', 'h3', 'h4']):
+                    t = tag.get_text(strip=True)
+                    if t and len(t) > 1 and not re.match(r'^\d', t):
+                        artist = t
+                        break
+
+                if not artist:
+                    # Fallback: link text, cleaned of date/time noise
+                    artist = link.get_text(strip=True)
+                    for mname in CZECH_MONTHS.keys():
+                        artist = re.sub(mname, '', artist, flags=re.I)
+                    artist = re.sub(r'\b(Po|Út|St|Čt|Pá|So|Ne|Pondělí|Úterý|Středa|Čtvrtek|Pátek|Sobota|Neděle)\b', '', artist, flags=re.I)
+                    artist = re.sub(r'\d{1,2}:\d{2}', '', artist)
+                    artist = re.sub(r'\b\d{1,2}\b', '', artist)
+                    artist = re.sub(r'(otevíráme|start|vstup|cena|předprodej).*', '', artist, flags=re.I)
+                    artist = re.sub(r'\s+', ' ', artist).strip()
+
+                if not artist or len(artist) < 2:
+                    continue
+
+                seen_urls.add(url)
+
+                events.append({
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url,
+                    'status': None
+                })
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        self.events = sorted(events, key=lambda x: x['day'])
+        self.logger.info(f"Found {len(self.events)} events")
+        return self.events
+
+
+class KabinetMuzBrowserScraper(BrowserScraper):
+    """
+    Kabinet Múz Brno scraper using Playwright
+    URL: https://www.kabinetmuz.cz/program
+    Static HTML: event links /program/YYYY-MM-DD-[slug] (date embedded in URL)
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://www.kabinetmuz.cz/program",
+            venue_name="Kabinet Múz",
+            city="Brno",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+        html = self.fetch_html_with_browser(wait_for_selector='a[href*="/program/"]')
+        return self.parse_html(html)
+
+    def parse_html(self, html: str) -> List[Dict]:
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Event links have URL pattern: /program/YYYY-MM-DD-[slug]
+        url_pattern = re.compile(rf'/program/{self.year}-{self.month:02d}-(\d{{2}})-')
+        event_links = soup.find_all('a', href=url_pattern)
+        self.logger.info(f"Found {len(event_links)} event links for {self.year}-{self.month:02d}")
+
+        events = []
+        seen_urls = set()
+
+        for link in event_links:
+            try:
+                href = link.get('href', '')
+
+                # Extract day from URL
+                url_match = re.search(rf'/program/{self.year}-{self.month:02d}-(\d{{2}})-', href)
+                if not url_match:
+                    continue
+
+                day = int(url_match.group(1))
+                url = f"https://www.kabinetmuz.cz{href}" if href.startswith('/') else href
+
+                if url in seen_urls:
+                    continue
+                seen_urls.add(url)
+
+                # Artist is in <h3> inside the <a> link itself
+                h3 = link.find('h3')
+                artist = h3.get_text(strip=True) if h3 else link.get_text(strip=True)
+
+                # Clean up artist: strip date prefix "DNES", weekday, "DD. M." pattern
+                artist = re.sub(r'^(DNES\s*)?(Po|Út|St|Čt|Pá|So|Ne|pondělí|úterý|středa|čtvrtek|pátek|sobota|neděle)\s*', '', artist, flags=re.I)
+                artist = re.sub(r'^\d{1,2}\.\s*\d{1,2}\.\s*', '', artist)
+                artist = artist.strip()
+
+                if not artist or len(artist) < 2:
+                    continue
+
+                # Extract time from link text
+                time_match = re.search(r'(\d{1,2}):(\d{2})', link.get_text())
+                time_str = f"{time_match.group(1)}:{time_match.group(2)}" if time_match else "20:00"
+
+                events.append({
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url,
+                    'status': None
+                })
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        self.events = sorted(events, key=lambda x: x['day'])
+        self.logger.info(f"Found {len(self.events)} events")
+        return self.events
+
+
+class StaraPekarnaBrowserScraper(BrowserScraper):
+    """
+    Stará Pekárna Brno scraper using Playwright
+    URL: https://www.starapekarna.cz/program
+    Static HTML: div.day-box → h3 (date "So 21.2.") + h2 (artist)
+    Note: No per-event URLs, uses /rezervace/YYYY-MM-DD
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://www.starapekarna.cz/program",
+            venue_name="Stará Pekárna",
+            city="Brno",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+        html = self.fetch_html_with_browser(wait_for_selector='div.day-box')
+        return self.parse_html(html)
+
+    def parse_html(self, html: str) -> List[Dict]:
+        soup = BeautifulSoup(html, 'lxml')
+
+        day_boxes = soup.find_all('div', class_='day-box')
+        self.logger.info(f"Found {len(day_boxes)} day-box elements")
+
+        events = []
+
+        for box in day_boxes:
+            try:
+                # Date is in div.col-photo > h3: "So 21.2." or "Čt 26.2."
+                col_photo = box.find('div', class_='col-photo')
+                if not col_photo:
+                    continue
+
+                h3 = col_photo.find('h3')
+                if not h3:
+                    continue
+
+                date_text = h3.get_text(strip=True)
+                date_match = re.search(r'(\d{1,2})\.(\d{1,2})\.?', date_text)
+                if not date_match:
+                    continue
+
+                day = int(date_match.group(1))
+                month_num = int(date_match.group(2))
+
+                if month_num != self.month:
+                    continue
+
+                # Artists from span.band-title (may be multiple per day-box)
+                band_spans = box.find_all('span', class_='band-title')
+                artist_names = [s.get_text(strip=True) for s in band_spans if s.get_text(strip=True)]
+
+                if not artist_names:
+                    continue
+
+                artist = " + ".join(artist_names)
+
+                # Time from box text (e.g. "Začátek v 19:30" or "20:00")
+                box_text = box.get_text()
+                time_match = re.search(r'(\d{1,2}):(\d{2})', box_text)
+                time_str = f"{time_match.group(1)}:{time_match.group(2)}" if time_match else "20:00"
+
+                # URL: per-date reservation page (closest to event-specific)
+                url = f"https://www.starapekarna.cz/rezervace/{self.year}-{self.month:02d}-{day:02d}"
+
+                events.append({
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url,
+                    'status': None
+                })
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse day-box: {e}")
+                continue
+
+        self.events = sorted(events, key=lambda x: x['day'])
+        self.logger.info(f"Found {len(self.events)} events")
+        return self.events
+
+
+class MelodkaBrowserScraper(BrowserScraper):
+    """
+    Melodka Brno scraper using Playwright
+    URL: https://www.melodka.cz/
+    Static HTML: event links /program/akce/DD-MM-YYYY-[slug] (date embedded in URL)
+    """
+
+    def __init__(self, month: int, year: int):
+        super().__init__(
+            url="https://www.melodka.cz/",
+            venue_name="Melodka",
+            city="Brno",
+            month=month,
+            year=year
+        )
+
+    def scrape(self) -> List[Dict]:
+        """Use domcontentloaded (not networkidle) - Melodka may have long-running connections"""
+        self.logger.info(f"Scraping {self.venue_name} for {self.month:02d}/{self.year}...")
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=self.headless)
+                page = browser.new_page()
+                page.goto(self.url, wait_until='domcontentloaded', timeout=60000)
+                page.wait_for_timeout(2000)
+                html = page.content()
+                browser.close()
+                self.logger.info(f"Fetched {len(html)} chars")
+        except Exception as e:
+            self.logger.error(f"Failed to fetch {self.url}: {e}")
+            raise
+        return self.parse_html(html)
+
+    def parse_html(self, html: str) -> List[Dict]:
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Event links: /program/akce/DD-MM-YYYY-[slug]
+        url_pattern = re.compile(rf'/program/akce/(\d{{2}})-{self.month:02d}-{self.year}-')
+        event_links = soup.find_all('a', href=url_pattern)
+        self.logger.info(f"Found {len(event_links)} event links for {self.month:02d}/{self.year}")
+
+        events = []
+        seen_urls = set()
+
+        for link in event_links:
+            try:
+                href = link.get('href', '')
+
+                # Extract day from URL: DD-MM-YYYY
+                url_match = re.search(rf'/program/akce/(\d{{2}})-{self.month:02d}-{self.year}-', href)
+                if not url_match:
+                    continue
+
+                day = int(url_match.group(1))
+                url = f"https://www.melodka.cz{href}" if href.startswith('/') else href
+
+                if url in seen_urls:
+                    continue
+                seen_urls.add(url)
+
+                # Artist: from link text, or title attribute (used in sliders)
+                artist = link.get_text(strip=True)
+                if not artist:
+                    artist = link.get('title', '').strip()
+
+                if not artist or len(artist) < 2:
+                    continue
+
+                # Time: from URL filename typically missing; use 20:00 default
+                time_str = "20:00"
+
+                events.append({
+                    'date': f"{day:02d}.{self.month:02d}.{self.year}",
+                    'day': day,
+                    'month': self.month,
+                    'year': self.year,
+                    'time': time_str,
+                    'artist': artist,
+                    'venue': self.venue_name,
+                    'city': self.city,
+                    'url': url,
+                    'status': None
+                })
+
+            except Exception as e:
+                self.logger.warning(f"Failed to parse event: {e}")
+                continue
+
+        self.events = sorted(events, key=lambda x: x['day'])
+        self.logger.info(f"Found {len(self.events)} events")
+        return self.events
+
+
 if __name__ == '__main__':
     main()
