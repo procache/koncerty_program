@@ -12,32 +12,25 @@ ENV/
 *.sqlite
 concert_scraper_cache.*
 
-# Output files (temporary)
+# Output files (generated, not tracked)
 events_data.json
-palac_akropolis_events.json
+*.json
+!kluby.json
 
-# Debug scripts (temporary development files)
-debug_*.py
-parse_*.py
-
-# HTML snapshots from debug scripts
-*_goout.html
-o2arena.html
-o2universum.html
-fortuna.html
-meetfactory*.html
-malostranskabeseda*.html
-reduta*.html
-*_ticketportal.html
+# HTML snapshots and debug files
+*.html
+!programy/*.html
 
 # Log files
+*.log
 scrape_output*.log
 
-# Temporary standalone test scripts (not in test suite)
-# Note: test_o2_scrapers.py is the real test file and should be tracked
-test_o2arena.py
-test_watt.py
-test_rockcafe.py
+# Debug scripts in root
+/debug_*.py
+/parse_*.py
+
+# Temp test scripts in root (not in tests/ or archive/)
+/test_*.py
 
 # IDE
 .vscode/
