@@ -1,10 +1,10 @@
 {
   "config": {
-    "mesic": "únor",
-    "mesic_en": "February",
+    "mesic": "březen",
+    "mesic_en": "March",
     "rok": 2026,
-    "mesic_cislo": 2,
-    "pocet_dni": 28,
+    "mesic_cislo": 3,
+    "pocet_dni": 31,
     "validace": {
       "globalni_minimum_akci": 180,
       "dny_bez_akci_maximum": 0,

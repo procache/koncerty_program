@@ -1933,8 +1933,8 @@ class BuenaVistaClubBrowserScraper(BrowserScraper):
 
                 date_text = h4.text.strip()
 
-                # Parse date format: DD.MM.YYYY
-                date_match = re.search(r'(\d{2})\.(\d{2})\.(\d{4})', date_text)
+                # Parse date format: DD.M.YYYY or DD.MM.YYYY
+                date_match = re.search(r'(\d{1,2})\.(\d{1,2})\.(\d{4})', date_text)
                 if not date_match:
                     continue
 
@@ -2422,7 +2422,7 @@ class FledaBrowserScraper(BrowserScraper):
 
     def __init__(self, month: int, year: int):
         super().__init__(
-            url="https://www.fleda.cz/program/",
+            url=f"https://www.fleda.cz/program/?month={month:02d}&year={year}",
             venue_name="Fléda",
             city="Brno",
             month=month,
