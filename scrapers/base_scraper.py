@@ -4,10 +4,22 @@ Base Scraper Class
 Common functionality for all venue scrapers.
 """
 
+import calendar
+import time
 import requests
 from bs4 import BeautifulSoup
 from typing import List, Dict, Optional
 import logging
+
+
+class ScraperError(Exception):
+    """Raised when scraping fails for a known reason (parsing, no data, etc.)"""
+    pass
+
+
+class NetworkError(ScraperError):
+    """Raised when a network request fails (timeout, connection error, HTTP error)"""
+    pass
 
 
 # Configure logging
@@ -61,9 +73,49 @@ class BaseScraper:
             response = requests.get(target_url, headers=headers, timeout=timeout)
             response.raise_for_status()
             return response.text
+        except requests.Timeout as e:
+            raise NetworkError(f"Timeout fetching {target_url}") from e
+        except requests.ConnectionError as e:
+            raise NetworkError(f"Connection error fetching {target_url}") from e
+        except requests.HTTPError as e:
+            raise NetworkError(f"HTTP {e.response.status_code} fetching {target_url}") from e
         except requests.RequestException as e:
-            self.logger.error(f"Failed to fetch {target_url}: {e}")
-            raise Exception(f"Failed to fetch {target_url}: {e}")
+            raise NetworkError(f"Request failed for {target_url}") from e
+
+    def fetch_html_with_retry(self, url: Optional[str] = None, timeout: int = 10, max_retries: int = 3, backoff: float = 2.0) -> str:
+        """
+        Fetch HTML with automatic retry on transient network errors.
+
+        Retries on: timeout, connection error, HTTP 429/503.
+        Does NOT retry on: HTTP 404, 400 (permanent failures).
+
+        Args:
+            url: URL to fetch (defaults to self.url)
+            timeout: Request timeout in seconds
+            max_retries: Maximum number of attempts
+            backoff: Multiplier for exponential backoff (2s, 4s, 8s by default)
+        """
+        TRANSIENT_HTTP_CODES = {429, 500, 502, 503, 504}
+        last_error: Exception = NetworkError("No attempts made")
+
+        for attempt in range(1, max_retries + 1):
+            try:
+                return self.fetch_html(url=url, timeout=timeout)
+            except NetworkError as e:
+                last_error = e
+                # Don't retry on permanent HTTP errors
+                cause = e.__cause__
+                if isinstance(cause, requests.HTTPError) and cause.response.status_code not in TRANSIENT_HTTP_CODES:
+                    self.logger.error(f"Permanent error, not retrying: {e}")
+                    raise
+                if attempt < max_retries:
+                    wait = backoff ** (attempt - 1)
+                    self.logger.warning(f"Attempt {attempt}/{max_retries} failed ({e}), retrying in {wait:.0f}s...")
+                    time.sleep(wait)
+                else:
+                    self.logger.error(f"All {max_retries} attempts failed for {url or self.url}")
+
+        raise last_error
 
     def scrape(self) -> List[Dict]:
         """
@@ -91,9 +143,13 @@ class BaseScraper:
         has_27 = any(e['day'] == 27 for e in self.events if e['month'] == 11)
         has_28 = any(e['day'] == 28 for e in self.events if e['month'] == 11)
 
-        # Count weekend events
-        # November 2025: Fri=7,14,21,28  Sat=1,8,15,22,29  Sun=2,9,16,23,30
-        weekends = {1, 2, 7, 8, 9, 14, 15, 16, 21, 22, 23, 28, 29, 30}
+        # Count weekend events — dynamically computed for correct month/year
+        # calendar.monthcalendar returns weeks as lists [Mo,Tu,We,Th,Fr,Sa,Su], 0 = no day
+        weekends = set()
+        for week in calendar.monthcalendar(self.year, self.month):
+            for idx in (4, 5, 6):  # Friday=4, Saturday=5, Sunday=6
+                if week[idx] != 0:
+                    weekends.add(week[idx])
         weekend_events = [e for e in self.events if e['day'] in weekends]
 
         # Determine status

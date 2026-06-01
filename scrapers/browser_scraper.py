@@ -41,30 +41,33 @@ class BrowserScraper(BaseScraper):
 
         try:
             with sync_playwright() as p:
-                # Launch browser
-                browser = p.chromium.launch(headless=self.headless)
-                page = browser.new_page()
+                browser = None
+                try:
+                    # Launch browser
+                    browser = p.chromium.launch(headless=self.headless)
+                    page = browser.new_page()
 
-                self.logger.info(f"Opening browser for {target_url}")
+                    self.logger.info(f"Opening browser for {target_url}")
 
-                # Navigate to page
-                page.goto(target_url, wait_until='networkidle', timeout=timeout)
+                    # Navigate to page
+                    page.goto(target_url, wait_until='networkidle', timeout=timeout)
 
-                # Wait for specific selector if provided
-                if wait_for_selector:
-                    self.logger.info(f"Waiting for selector: {wait_for_selector}")
-                    page.wait_for_selector(wait_for_selector, timeout=timeout)
-                else:
-                    # Default: wait a bit for JavaScript to load
-                    page.wait_for_timeout(3000)
+                    # Wait for specific selector if provided
+                    if wait_for_selector:
+                        self.logger.info(f"Waiting for selector: {wait_for_selector}")
+                        page.wait_for_selector(wait_for_selector, timeout=timeout)
+                    else:
+                        # Default: wait a bit for JavaScript to load
+                        page.wait_for_timeout(3000)
 
-                # Get HTML
-                html = page.content()
+                    # Get HTML
+                    html = page.content()
 
-                browser.close()
-
-                self.logger.info(f"Successfully fetched {len(html)} chars of HTML")
-                return html
+                    self.logger.info(f"Successfully fetched {len(html)} chars of HTML")
+                    return html
+                finally:
+                    if browser:
+                        browser.close()
 
         except PlaywrightTimeout as e:
             self.logger.error(f"Timeout fetching {target_url}: {e}")
@@ -110,8 +113,8 @@ class RockCafeBrowserScraper(BrowserScraper):
         if not href or '/en/program/' not in href:
             return None
 
-        # Skip archive links
-        if any(f'/{year}/' in href for year in range(2010, 2027)):
+        # Skip archive links (any year up to and including current year)
+        if any(f'/{year}/' in href for year in range(2000, self.year + 1)):
             return None
 
         # Check for music category
@@ -823,50 +826,53 @@ class MeetFactoryBrowserScraper(BrowserScraper):
         """
         try:
             with sync_playwright() as p:
-                browser = p.chromium.launch(headless=self.headless)
-                page = browser.new_page()
+                browser = None
+                try:
+                    browser = p.chromium.launch(headless=self.headless)
+                    page = browser.new_page()
 
-                self.logger.info(f"Opening browser for {self.url}")
-                page.goto(self.url, wait_until='networkidle', timeout=30000)
+                    self.logger.info(f"Opening browser for {self.url}")
+                    page.goto(self.url, wait_until='networkidle', timeout=30000)
 
-                # Wait for initial content
-                self.logger.info("Waiting for initial event boxes")
-                page.wait_for_selector('div.ab-box', timeout=10000)
+                    # Wait for initial content
+                    self.logger.info("Waiting for initial event boxes")
+                    page.wait_for_selector('div.ab-box', timeout=10000)
 
-                # Scroll down multiple times to trigger lazy loading
-                previous_height = 0
-                scroll_attempts = 0
-                max_scrolls = 10  # Safety limit
+                    # Scroll down multiple times to trigger lazy loading
+                    previous_height = 0
+                    scroll_attempts = 0
+                    max_scrolls = 10  # Safety limit
 
-                self.logger.info("Starting infinite scroll...")
-                while scroll_attempts < max_scrolls:
-                    # Get current scroll height
-                    current_height = page.evaluate("document.body.scrollHeight")
+                    self.logger.info("Starting infinite scroll...")
+                    while scroll_attempts < max_scrolls:
+                        # Get current scroll height
+                        current_height = page.evaluate("document.body.scrollHeight")
 
-                    # If height hasn't changed, we've reached the bottom
-                    if current_height == previous_height:
-                        self.logger.info(f"Reached bottom after {scroll_attempts} scrolls")
-                        break
+                        # If height hasn't changed, we've reached the bottom
+                        if current_height == previous_height:
+                            self.logger.info(f"Reached bottom after {scroll_attempts} scrolls")
+                            break
 
-                    # Scroll to bottom
-                    page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                        # Scroll to bottom
+                        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
 
-                    # Wait for new content to load
-                    page.wait_for_timeout(1500)  # 1.5 seconds between scrolls
+                        # Wait for new content to load
+                        page.wait_for_timeout(1500)  # 1.5 seconds between scrolls
 
-                    previous_height = current_height
-                    scroll_attempts += 1
+                        previous_height = current_height
+                        scroll_attempts += 1
 
-                    # Count current event boxes
-                    event_count = page.evaluate("document.querySelectorAll('div.ab-box').length")
-                    self.logger.info(f"Scroll {scroll_attempts}: Found {event_count} event boxes")
+                        # Count current event boxes
+                        event_count = page.evaluate("document.querySelectorAll('div.ab-box').length")
+                        self.logger.info(f"Scroll {scroll_attempts}: Found {event_count} event boxes")
 
-                # Get final HTML
-                html = page.content()
-                browser.close()
-
-                self.logger.info(f"Successfully fetched {len(html)} chars of HTML after scrolling")
-                return html
+                    # Get final HTML
+                    html = page.content()
+                    self.logger.info(f"Successfully fetched {len(html)} chars of HTML after scrolling")
+                    return html
+                finally:
+                    if browser:
+                        browser.close()
 
         except Exception as e:
             self.logger.error(f"Failed to fetch with infinite scroll: {e}")

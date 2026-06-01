@@ -11,6 +11,7 @@ Features:
 - Sorted by date
 """
 
+import html as html_module
 import json
 from datetime import datetime
 
@@ -487,22 +488,31 @@ def generate_html(data):
         else:
             city_class = 'praha'
 
+        # Escape all user-facing strings to prevent XSS
+        safe_artist = html_module.escape(str(event['artist']))
+        safe_venue = html_module.escape(str(event['venue']))
+        safe_city = html_module.escape(str(event['city']))
+        safe_time = html_module.escape(str(event['time'] or ''))
+        safe_url = html_module.escape(str(event['url']))
+        # data-search lowercased for JS filtering (already escaped)
+        safe_search = html_module.escape(f"{event['artist'].lower()} {event['venue'].lower()} {event['city'].lower()}")
+
         html += f"""
-            <div class="event-card" data-city="{event['city']}" data-day="{event['day']}" data-search="{event['artist'].lower()} {event['venue'].lower()} {event['city'].lower()}">
+            <div class="event-card" data-city="{safe_city}" data-day="{event['day']}" data-search="{safe_search}">
                 <div class="event-date">
                     <div class="event-day">{event['day']}</div>
                     <div class="event-month">{month_name}</div>
                 </div>
                 <div class="event-info">
-                    <div class="event-artist">{event['artist']}</div>
+                    <div class="event-artist">{safe_artist}</div>
                     <div class="event-details">
-                        <span class="event-venue">{event['venue']}</span>
-                        <span class="event-city {city_class}">{event['city']}</span>
-                        <span class="event-time">⏰ {event['time']}</span>
+                        <span class="event-venue">{safe_venue}</span>
+                        <span class="event-city {city_class}">{safe_city}</span>
+                        <span class="event-time">⏰ {safe_time}</span>
                     </div>
                 </div>
                 <div class="event-link">
-                    <a href="{event['url']}" target="_blank">Více info</a>
+                    <a href="{safe_url}" target="_blank" rel="noopener noreferrer">Více info</a>
                 </div>
             </div>
 """

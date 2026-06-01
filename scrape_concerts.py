@@ -10,6 +10,7 @@ Configuration:
     Read from kluby.json - month, year, and venue list
 """
 
+import argparse
 import json
 import requests_cache
 import logging
@@ -297,8 +298,48 @@ def scrape_venue(venue: Dict, month: int, year: int) -> Tuple[List[Dict], Dict, 
         return [], None, e
 
 
+def print_validation_report(successful_venues: List[Dict], config_kluby: List[Dict]) -> List[str]:
+    """
+    Print color-coded validation report and return list of problem venue names.
+
+    Returns:
+        List of venue names with 0 events where min_akci > 0 (RED alert venues)
+    """
+    print("\n" + "=" * 60)
+    print("VALIDAČNÍ REPORT")
+    print("=" * 60)
+
+    red_venues = []
+    venue_min = {v['nazev']: v.get('min_akci', 0) for v in config_kluby}
+
+    for v in successful_venues:
+        status = v['validation']['status']
+        name = v['venue']
+        count = v['validation']['total_events']
+        expected = v['validation']['expected_range']
+        icon = "✅" if status == 'GREEN' else ("⚠️ " if status == 'YELLOW' else "🚨")
+        print(f"  {icon} {name}: {count} eventů (očekáváno {expected}) [{status}]")
+        if count == 0 and venue_min.get(name, 0) > 0:
+            red_venues.append(name)
+
+    print("=" * 60)
+
+    if red_venues:
+        print("\n🚨 VENUES S 0 EVENTY (možné selhání scraperu):")
+        for name in red_venues:
+            print(f"   - {name}")
+        print()
+
+    return red_venues
+
+
 def main():
     """Main entry point with retry strategy"""
+    parser = argparse.ArgumentParser(description='Concert scraper')
+    parser.add_argument('--force', action='store_true',
+                        help='Přeskočit interaktivní potvrzení a vždy uložit výstup')
+    args = parser.parse_args()
+
     logger.info("Concert Scraper Framework")
     logger.info("=" * 60)
 
@@ -350,18 +391,17 @@ def main():
 
     # Summary
     total_events = sum(v['validation']['total_events'] for v in successful_venues)
-    logger.info("\n" + "=" * 60)
-    logger.info("SCRAPING COMPLETE")
-    logger.info("=" * 60)
-    logger.info(f"Successful venues: {len(successful_venues)}/{len(config['kluby'])}")
-    logger.info(f"Total events: {total_events}")
+    logger.info(f"\nÚspěšné venues: {len(successful_venues)}/{len(config['kluby'])}")
+    logger.info(f"Celkem eventů: {total_events}")
 
-    # Count by status
-    green = sum(1 for v in successful_venues if v['validation']['status'] == 'GREEN')
-    yellow = sum(1 for v in successful_venues if v['validation']['status'] == 'YELLOW')
-    red = sum(1 for v in successful_venues if v['validation']['status'] == 'RED')
-    logger.info(f"Status: GREEN={green}, YELLOW={yellow}, RED={red}")
-    logger.info("=" * 60)
+    # Validation report + interactive confirmation
+    red_venues = print_validation_report(successful_venues, config['kluby'])
+
+    if red_venues and not args.force:
+        answer = input("Pokračovat a uložit events_data.json i přes chybějící data? [y/N]: ").strip().lower()
+        if answer != 'y':
+            logger.info("Přerušeno uživatelem. events_data.json nebyl přepsán.")
+            return
 
     # Save to JSON
     all_events = {
@@ -375,7 +415,8 @@ def main():
     with open('events_data.json', 'w', encoding='utf-8') as f:
         json.dump(all_events, f, ensure_ascii=False, indent=2)
 
-    logger.info("\n[OK] Saved to events_data.json")
+    logger.info("\n✅ Uloženo do events_data.json")
+    logger.info("Spusť python generate_html.py pro vygenerování HTML.")
 
 
 if __name__ == '__main__':

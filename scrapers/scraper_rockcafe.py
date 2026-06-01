@@ -46,8 +46,8 @@ class RockCafeScraper(BaseScraper):
         if not href or '/en/program/' not in href:
             return None
 
-        # Skip archive links
-        if any(f'/{year}/' in href for year in range(2010, 2027)):
+        # Skip archive links (any year up to and including current year)
+        if any(f'/{year}/' in href for year in range(2000, self.year + 1)):
             return None
 
         # Check for music category
